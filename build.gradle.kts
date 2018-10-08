@@ -11,7 +11,7 @@ dependencies {
     implementation("com.google.guava:guava:26.0-jre")
     implementation("com.google.code.gson:gson:2.8.5")
     testImplementation(gradleTestKit())
-    testImplementation("org.spockframework:spock-core:1.2-groovy-2.5") {
+    testImplementation("org.spockframework:spock-core:1.2-groovy-2.4") {
         exclude("groovy-all")
     }
 }
@@ -31,4 +31,8 @@ gradlePlugin {
             implementationClass = "io.lacasse.vscode.gradle.plugins.CompileCommandPlugin"
         }
     }
+}
+
+tasks.register("continuousIntegration") {
+    dependsOn(tasks.named("check"))
 }
