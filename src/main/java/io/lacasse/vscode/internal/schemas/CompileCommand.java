@@ -14,15 +14,34 @@
  * limitations under the License.
  */
 
-package io.lacasse.vscode.schemas.task;
+package io.lacasse.vscode.internal.schemas;
 
-import java.util.ArrayList;
-import java.util.List;
+public class CompileCommand {
+    private String directory;
+    private String command;
+    private String file;
 
-public class ProblemMatcher {
-    private final List<ProblemPattern> pattern = new ArrayList<>();
+    public String getDirectory() {
+        return directory;
+    }
 
-    public List<ProblemPattern> getPattern() {
-        return pattern;
+    public void setDirectory(String directory) {
+        this.directory = directory;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
+    }
+
+    public String getFile() {
+        return file;
+    }
+
+    public void setFile(String file) {
+        this.file = file;
     }
 }

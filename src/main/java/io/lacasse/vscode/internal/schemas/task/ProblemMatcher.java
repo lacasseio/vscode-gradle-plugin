@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package io.lacasse.vscode.schemas.task;
+package io.lacasse.vscode.internal.schemas.task;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaseTaskConfiguration {
-    private final List<TaskDescription> tasks = new ArrayList<>();
+public class ProblemMatcher {
+    private final List<ProblemPattern> pattern = new ArrayList<>();
 
-    public List<TaskDescription> getTasks() {
-        return tasks;
+    public List<ProblemPattern> getPattern() {
+        return pattern;
     }
 }

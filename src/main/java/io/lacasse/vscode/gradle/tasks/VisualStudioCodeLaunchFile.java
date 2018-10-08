@@ -16,16 +16,16 @@
 
 package io.lacasse.vscode.gradle.tasks;
 
-import io.lacasse.vscode.gradle.generator.JsonPersistableConfigurationObject;
-import io.lacasse.vscode.schemas.launch.LaunchConfiguration;
-import io.lacasse.vscode.schemas.launch.LaunchDescription;
+import io.lacasse.vscode.gradle.internal.generator.JsonPersistableConfigurationObject;
+import io.lacasse.vscode.internal.schemas.launch.LaunchConfiguration;
+import io.lacasse.vscode.internal.schemas.launch.LaunchDescription;
 
 import java.util.List;
 
 public class VisualStudioCodeLaunchFile extends JsonPersistableConfigurationObject<LaunchConfiguration> {
     private List<LaunchDescription> launches;
 
-    protected VisualStudioCodeLaunchFile() {
+    public VisualStudioCodeLaunchFile() {
         super(LaunchConfiguration.class);
     }
 

@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package io.lacasse.vscode.schemas.workspace;
+package io.lacasse.vscode.internal.schemas.workspace;
 
-public class WorkspaceFolder {
-    private String path;
+import java.util.ArrayList;
+import java.util.List;
 
-    public String getPath() {
-        return path;
-    }
+public class Workspace {
+    private final List<WorkspaceFolder> folders = new ArrayList<>();
 
-    public void setPath(String path) {
-        this.path = path;
+    public List<WorkspaceFolder> getFolders() {
+        return folders;
     }
 }

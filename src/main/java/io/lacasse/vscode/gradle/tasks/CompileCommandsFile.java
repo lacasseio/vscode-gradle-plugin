@@ -16,8 +16,8 @@
 
 package io.lacasse.vscode.gradle.tasks;
 
-import io.lacasse.vscode.gradle.generator.JsonPersistableConfigurationObject;
-import io.lacasse.vscode.schemas.CompileCommand;
+import io.lacasse.vscode.gradle.internal.generator.JsonPersistableConfigurationObject;
+import io.lacasse.vscode.internal.schemas.CompileCommand;
 import org.gradle.internal.impldep.com.google.gson.reflect.TypeToken;
 
 import java.io.File;
@@ -27,7 +27,7 @@ import java.util.List;
 public class CompileCommandsFile extends JsonPersistableConfigurationObject<List<CompileCommand>> {
     private final List<CompileCommand> compileCommands = new ArrayList<>();
 
-    protected CompileCommandsFile() {
+    public CompileCommandsFile() {
         super(new TypeToken<List<CompileCommand>>() {}.getType());
     }
 

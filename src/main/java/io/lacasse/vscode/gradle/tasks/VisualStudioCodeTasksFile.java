@@ -16,16 +16,16 @@
 
 package io.lacasse.vscode.gradle.tasks;
 
-import io.lacasse.vscode.schemas.task.TaskDescription;
-import io.lacasse.vscode.gradle.generator.JsonPersistableConfigurationObject;
-import io.lacasse.vscode.schemas.task.TaskConfiguration;
+import io.lacasse.vscode.internal.schemas.task.TaskDescription;
+import io.lacasse.vscode.gradle.internal.generator.JsonPersistableConfigurationObject;
+import io.lacasse.vscode.internal.schemas.task.TaskConfiguration;
 
 import java.util.List;
 
 public class VisualStudioCodeTasksFile extends JsonPersistableConfigurationObject<TaskConfiguration> {
     private List<TaskDescription> vsCodeTasks;
 
-    protected VisualStudioCodeTasksFile() {
+    public VisualStudioCodeTasksFile() {
         super(TaskConfiguration.class);
     }
 

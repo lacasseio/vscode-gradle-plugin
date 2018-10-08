@@ -18,9 +18,9 @@ package io.lacasse.vscode.gradle.tasks;
 
 import io.lacasse.vscode.gradle.VisualStudioCodeGradleTask;
 import io.lacasse.vscode.gradle.internal.DefaultVisualStudioCodeGradleTask;
-import io.lacasse.vscode.schemas.task.ProblemMatcher;
-import io.lacasse.vscode.schemas.task.ProblemPattern;
-import io.lacasse.vscode.schemas.task.TaskDescription;
+import io.lacasse.vscode.internal.schemas.task.ProblemMatcher;
+import io.lacasse.vscode.internal.schemas.task.ProblemPattern;
+import io.lacasse.vscode.internal.schemas.task.TaskDescription;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.Internal;

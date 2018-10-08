@@ -22,7 +22,15 @@ import org.gradle.api.file.Directory;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskProvider;
 
+/**
+ * A visual studio code project, created from one or more project variant.
+ *
+ * @since 1.0
+ */
 public interface VisualStudioCodeProject {
+    /**
+     * Returns a {@code Provider} of the project location.
+     */
     Provider<Directory> getLocation();
 
     VisualStudioCodeGradleTask task(String name, TaskProvider<? extends Task> task);

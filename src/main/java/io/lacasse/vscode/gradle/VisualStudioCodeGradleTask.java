@@ -19,7 +19,16 @@ package io.lacasse.vscode.gradle;
 import org.gradle.api.Task;
 import org.gradle.api.tasks.TaskProvider;
 
+/**
+ * A Gradle task reference to be called from Visual Studio Code.
+ *
+ * @since 1.0
+ */
 public interface VisualStudioCodeGradleTask {
+    /**
+     * Returns the display name to use Visual Studio Code
+     */
+    // TODO: Change to displayName
     String getName();
 
     TaskProvider<? extends Task> getTask();

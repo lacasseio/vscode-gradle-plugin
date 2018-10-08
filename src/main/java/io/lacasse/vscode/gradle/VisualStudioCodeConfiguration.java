@@ -20,7 +20,12 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 
+// TODO: Divide C++ specific from generic OR rename to specific C++ configuration (aka look at how Java do it)
 public interface VisualStudioCodeConfiguration {
+    /**
+     * Returns the name of the configuration.
+     */
+    // TODO: use displayName instead
     String getName();
 
     ConfigurableFileCollection getIncludes();

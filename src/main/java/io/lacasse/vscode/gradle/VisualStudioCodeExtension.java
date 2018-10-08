@@ -18,8 +18,19 @@ package io.lacasse.vscode.gradle;
 
 import org.gradle.api.Action;
 
+/**
+ * The configuration for mapping a set of components to a Visual Studio Code project.
+ *
+ * @since 1.0
+ */
 public interface VisualStudioCodeExtension {
+    /**
+     * Returns the generated  {@link VisualStudioCodeProject} for this build.
+     */
     VisualStudioCodeProject getProject();
 
+    /**
+     * Configures the generated {@link VisualStudioCodeProject} for this build.
+     */
     void project(Action<? super VisualStudioCodeProject> action);
 }

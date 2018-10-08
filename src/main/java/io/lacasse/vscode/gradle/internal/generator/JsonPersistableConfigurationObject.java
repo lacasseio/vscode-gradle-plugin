@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.lacasse.vscode.gradle.generator;
+package io.lacasse.vscode.gradle.internal.generator;
 
 import com.google.gson.GsonBuilder;
 import org.gradle.plugins.ide.internal.generator.AbstractPersistableConfigurationObject;

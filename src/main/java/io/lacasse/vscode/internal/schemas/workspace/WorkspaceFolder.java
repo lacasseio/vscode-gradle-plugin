@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package io.lacasse.vscode.schemas.task;
+package io.lacasse.vscode.internal.schemas.workspace;
 
-public class TaskConfiguration extends BaseTaskConfiguration {
-    private final String version = "2.0.0";
+public class WorkspaceFolder {
+    private String path;
 
-    public String getVersion() {
-        return version;
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

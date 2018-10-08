@@ -17,6 +17,8 @@
 package io.lacasse.vscode.gradle.internal;
 
 import io.lacasse.vscode.gradle.VisualStudioCodeRootExtension;
+import io.lacasse.vscode.gradle.VisualStudioCodeWorkspace;
+import org.gradle.api.Action;
 import org.gradle.api.model.ObjectFactory;
 
 import javax.inject.Inject;
@@ -33,5 +35,10 @@ public class DefaultVisualStudioCodeRootExtension extends DefaultVisualStudioCod
     @Override
     public DefaultVisualStudioCodeWorkspace getWorkspace() {
         return workspace;
+    }
+
+    @Override
+    public void workspace(Action<? super VisualStudioCodeWorkspace> action) {
+        action.execute(workspace);
     }
 }

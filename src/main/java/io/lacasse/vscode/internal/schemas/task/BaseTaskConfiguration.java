@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package io.lacasse.vscode.schemas.workspace;
+package io.lacasse.vscode.internal.schemas.task;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Workspace {
-    private final List<WorkspaceFolder> folders = new ArrayList<>();
+public class BaseTaskConfiguration {
+    private final List<TaskDescription> tasks = new ArrayList<>();
 
-    public List<WorkspaceFolder> getFolders() {
-        return folders;
+    public List<TaskDescription> getTasks() {
+        return tasks;
     }
 }

@@ -16,6 +16,21 @@
 
 package io.lacasse.vscode.gradle;
 
+import org.gradle.api.Action;
+
+/**
+ * The configuration for mapping a set of components to a Visual Studio Code project and workspace.
+ *
+ * @since 1.0
+ */
 public interface VisualStudioCodeRootExtension extends VisualStudioCodeExtension {
+    /**
+     * Returns the generated  {@link VisualStudioCodeWorkspace} for this build.
+     */
     VisualStudioCodeWorkspace getWorkspace();
+
+    /**
+     * Configures the generated {@link VisualStudioCodeWorkspace} for this build.
+     */
+    void workspace(Action<? super VisualStudioCodeWorkspace> action);
 }

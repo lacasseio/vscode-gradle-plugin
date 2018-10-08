@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.lacasse.vscode.schemas.task;
+package io.lacasse.vscode.internal.schemas.task;
 
 import org.gradle.internal.impldep.com.google.gson.annotations.SerializedName;
 

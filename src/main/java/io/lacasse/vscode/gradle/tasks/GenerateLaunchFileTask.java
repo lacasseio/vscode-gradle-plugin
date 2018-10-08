@@ -17,19 +17,14 @@
 package io.lacasse.vscode.gradle.tasks;
 
 import io.lacasse.vscode.gradle.VisualStudioCodeLaunch;
-import io.lacasse.vscode.gradle.internal.DefaultVisualStudioCodeLaunch;
-import io.lacasse.vscode.schemas.launch.LaunchDescription;
+import io.lacasse.vscode.internal.schemas.launch.LaunchDescription;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.Nested;
-import org.gradle.api.tasks.SkipWhenEmpty;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class GenerateLaunchFileTask extends JsonGeneratorTask<VisualStudioCodeLaunchFile> {
     private final RegularFileProperty launchFileLocation = newOutputFile();

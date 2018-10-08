@@ -16,9 +16,9 @@
 
 package io.lacasse.vscode.gradle.tasks;
 
-import io.lacasse.vscode.schemas.workspace.Workspace;
-import io.lacasse.vscode.schemas.workspace.WorkspaceFolder;
-import io.lacasse.vscode.gradle.generator.JsonPersistableConfigurationObject;
+import io.lacasse.vscode.internal.schemas.workspace.Workspace;
+import io.lacasse.vscode.internal.schemas.workspace.WorkspaceFolder;
+import io.lacasse.vscode.gradle.internal.generator.JsonPersistableConfigurationObject;
 
 import java.io.File;
 import java.util.Set;
@@ -26,7 +26,7 @@ import java.util.Set;
 public class VisualStudioCodeWorkspaceFile extends JsonPersistableConfigurationObject<Workspace> {
     private Set<File> projectLocations;
 
-    protected VisualStudioCodeWorkspaceFile() {
+    public VisualStudioCodeWorkspaceFile() {
         super(Workspace.class);
     }
 

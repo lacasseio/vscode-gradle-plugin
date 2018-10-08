@@ -19,6 +19,13 @@ package io.lacasse.vscode.gradle;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.provider.Provider;
 
+/**
+ * A visual studio code workspace, representing one or more project in a build.
+ * @since 1.0
+ */
 public interface VisualStudioCodeWorkspace {
+    /**
+     * Returns a {@code Provider} of the workspace location.
+     */
     Provider<RegularFile> getLocation();
 }

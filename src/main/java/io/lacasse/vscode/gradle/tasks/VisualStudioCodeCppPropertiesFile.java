@@ -16,8 +16,8 @@
 
 package io.lacasse.vscode.gradle.tasks;
 
-import io.lacasse.vscode.gradle.generator.JsonPersistableConfigurationObject;
-import io.lacasse.vscode.schemas.VisualStudioCodeCppProperties;
+import io.lacasse.vscode.gradle.internal.generator.JsonPersistableConfigurationObject;
+import io.lacasse.vscode.internal.schemas.VisualStudioCodeCppProperties;
 import org.gradle.api.file.FileCollection;
 
 import java.io.File;
@@ -26,7 +26,8 @@ import java.util.List;
 
 public class VisualStudioCodeCppPropertiesFile extends JsonPersistableConfigurationObject<VisualStudioCodeCppProperties> {
     private final List<VisualStudioCodeCppProperties.Configuration> configurations = new ArrayList<>();
-    protected VisualStudioCodeCppPropertiesFile() {
+
+    public VisualStudioCodeCppPropertiesFile() {
         super(VisualStudioCodeCppProperties.class);
     }
 

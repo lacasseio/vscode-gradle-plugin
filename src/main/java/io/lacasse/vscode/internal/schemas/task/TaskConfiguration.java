@@ -14,34 +14,12 @@
  * limitations under the License.
  */
 
-package io.lacasse.vscode.schemas;
+package io.lacasse.vscode.internal.schemas.task;
 
-public class CompileCommand {
-    private String directory;
-    private String command;
-    private String file;
+public class TaskConfiguration extends BaseTaskConfiguration {
+    private final String version = "2.0.0";
 
-    public String getDirectory() {
-        return directory;
-    }
-
-    public void setDirectory(String directory) {
-        this.directory = directory;
-    }
-
-    public String getCommand() {
-        return command;
-    }
-
-    public void setCommand(String command) {
-        this.command = command;
-    }
-
-    public String getFile() {
-        return file;
-    }
-
-    public void setFile(String file) {
-        this.file = file;
+    public String getVersion() {
+        return version;
     }
 }

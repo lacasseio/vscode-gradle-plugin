@@ -19,7 +19,9 @@ package io.lacasse.vscode.gradle;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
 
+// TODO: Look at how Java do it and figure this out ELSE make it explicitly specific to C++
 public interface VisualStudioCodeLaunch {
+    // TODO: Use display name instead
     String getName();
     RegularFileProperty getProgramLocation();
     RegularFileProperty getDebuggerLocation();
