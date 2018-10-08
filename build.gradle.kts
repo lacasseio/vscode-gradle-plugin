@@ -1,6 +1,7 @@
 plugins {
     `groovy`
     `java-gradle-plugin`
+    id("com.gradle.plugin-publish").version("0.10.0")
 }
 
 group = "io.lacasse.vscode"
@@ -29,6 +30,20 @@ gradlePlugin {
         create("compileCommands") {
             id = "io.lacasse.compile-commands"
             implementationClass = "io.lacasse.vscode.gradle.plugins.CompileCommandPlugin"
+        }
+    }
+}
+
+pluginBundle {
+    website = "https://github.com/lacasseio/vscode-gradle-plugin"
+    vcsUrl = "https://github.com/lacasseio/vscode-gradle-plugin"
+    description = "Gradle plugin for generating Visual Studio Code IDE files."
+    tags = listOf("visual-studio-code", "vscode", "ide")
+
+    plugins {
+        val vscode by existing {
+            // id is captured from java-gradle-plugin configuration
+            displayName = "Visual Studio Code Gradle Plugin"
         }
     }
 }
