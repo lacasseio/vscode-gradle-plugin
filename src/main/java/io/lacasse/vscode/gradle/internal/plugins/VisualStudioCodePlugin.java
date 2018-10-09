@@ -136,11 +136,11 @@ public class VisualStudioCodePlugin extends IdePlugin {
 //    private void configureNativeComponent(VisualStudioCodeExtension visualStudioCode, CppComponent component, TaskContainer task) {
 //        component.getBinaries().whenElementKnown(binary -> {
 //            if (binary instanceof CppSharedLibrary) {
-//                visualStudioCode.getProject().task("Build " + binary.getName(), task.named(((CppSharedLibrary) binary).getLinkTask().get().getName()));
+//                visualStudioCode.getProject().task("Build " + binary.getDisplayName(), task.named(((CppSharedLibrary) binary).getLinkTask().get().getDisplayName()));
 //            } else if (binary instanceof CppStaticLibrary) {
-//                visualStudioCode.getProject().task("Build " + binary.getName(), task.named(((CppStaticLibrary) binary).getCreateTask().get().getName()));
+//                visualStudioCode.getProject().task("Build " + binary.getDisplayName(), task.named(((CppStaticLibrary) binary).getCreateTask().get().getDisplayName()));
 //            } else if (binary instanceof CppExecutable) {
-//                visualStudioCode.getProject().task("Build " + binary.getName(), task.named(((CppExecutable) binary).getLinkTask().get().getName()));
+//                visualStudioCode.getProject().task("Build " + binary.getDisplayName(), task.named(((CppExecutable) binary).getLinkTask().get().getDisplayName()));
 //            } else {
 //                throw new IllegalArgumentException();
 //            }

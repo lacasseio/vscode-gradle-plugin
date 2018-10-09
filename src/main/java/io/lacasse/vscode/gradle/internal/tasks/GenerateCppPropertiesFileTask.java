@@ -16,7 +16,7 @@
 
 package io.lacasse.vscode.gradle.internal.tasks;
 
-import io.lacasse.vscode.gradle.VisualStudioCodeConfiguration;
+import io.lacasse.vscode.gradle.VisualStudioCodeCppConfiguration;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.Internal;
@@ -26,7 +26,7 @@ import java.io.File;
 
 public class GenerateCppPropertiesFileTask extends JsonGeneratorTask<VisualStudioCodeCppPropertiesFile> {
     private final RegularFileProperty cppPropertiesFileLocation = newOutputFile();
-    private final ListProperty<VisualStudioCodeConfiguration> configurations = getProject().getObjects().listProperty(VisualStudioCodeConfiguration.class);
+    private final ListProperty<VisualStudioCodeCppConfiguration> configurations = getProject().getObjects().listProperty(VisualStudioCodeCppConfiguration.class);
 
     public GenerateCppPropertiesFileTask() {
 //        dependsOn((Callable<List<TaskProvider<?>>>) () -> configurations.get().stream().map(DefaultVisualStudioCodeCppConfiguration::getTask).collect(Collectors.toList()));
@@ -34,8 +34,8 @@ public class GenerateCppPropertiesFileTask extends JsonGeneratorTask<VisualStudi
 
     @Override
     protected void configure(VisualStudioCodeCppPropertiesFile object) {
-        for (VisualStudioCodeConfiguration configuration : configurations.get()) {
-            object.configuration(configuration.getName(), configuration.getCompileCommandsLocation().get().getAsFile(), configuration.getIncludes(), configuration.getDefines().get());
+        for (VisualStudioCodeCppConfiguration configuration : configurations.get()) {
+            object.configuration(configuration.getDisplayName(), configuration.getCompileCommandsLocation().get().getAsFile(), configuration.getIncludes(), configuration.getDefines().get());
         }
     }
 
@@ -65,7 +65,7 @@ public class GenerateCppPropertiesFileTask extends JsonGeneratorTask<VisualStudi
     }
 
     @Nested
-    public ListProperty<VisualStudioCodeConfiguration> getConfigurations() {
+    public ListProperty<VisualStudioCodeCppConfiguration> getConfigurations() {
         return configurations;
     }
 }

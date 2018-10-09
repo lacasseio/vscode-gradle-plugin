@@ -43,7 +43,7 @@ public class GenerateTasksFileTask extends JsonGeneratorTask<VisualStudioCodeTas
             DefaultVisualStudioCodeGradleTask tool = (DefaultVisualStudioCodeGradleTask) t;
             TaskDescription task = new TaskDescription();
             task.setCommand(IdePlugin.toGradleCommand(getProject()) + " --project-dir " + getProject().getRootDir().getAbsolutePath() + " " + tool.getTask().get().getPath());
-            task.setLabel(tool.getName());
+            task.setLabel(tool.getDisplayName());
             if (tool.getProblemMatcher() != null) {
                 task.setProblemMatcher(tool.getProblemMatcher());
             } else {

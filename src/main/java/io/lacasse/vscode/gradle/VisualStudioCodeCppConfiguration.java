@@ -20,15 +20,29 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 
+/**
+ * A C++ configuration used for intellisense by the {@code ms-vscode.cpptools} Visual Studio Code extension.
+ *
+ * @since 1.0
+ */
 public interface VisualStudioCodeCppConfiguration {
     /**
-     * Returns the name of the configuration.
+     * Returns the display name of the configuration used for Visual Studio Code intellisense.
      */
-    // TODO: use displayName instead
-    String getName();
+    String getDisplayName();
 
-    // C++ specific
+    /**
+     * Returns the include paths for header resolving.
+     */
     ConfigurableFileCollection getIncludes();
+
+    /**
+     * Returns the list of defines in the format of {@code DEFINE} or {@code DEFINE=VALUE}.
+     */
     ListProperty<String> getDefines();
+
+    /**
+     * Returns the location of the compile_commands.json file.
+     */
     RegularFileProperty getCompileCommandsLocation();
 }

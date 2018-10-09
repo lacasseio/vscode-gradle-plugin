@@ -41,7 +41,7 @@ public class DefaultVisualStudioCodeGdbLaunch implements VisualStudioCodeGdbLaun
     }
 
     @Override
-    public String getName() {
+    public String getDisplayName() {
         return name;
     }
 
@@ -51,7 +51,7 @@ public class DefaultVisualStudioCodeGdbLaunch implements VisualStudioCodeGdbLaun
     }
 
     @Override
-    public RegularFileProperty getDebuggerLocation() {
+    public RegularFileProperty getGdbLocation() {
         return debuggerLocation;
     }
 

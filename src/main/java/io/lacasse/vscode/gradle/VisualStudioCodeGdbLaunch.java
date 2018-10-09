@@ -19,12 +19,29 @@ package io.lacasse.vscode.gradle;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
 
+/**
+ * A GDB launch configuration for Visual Studio Code.
+ *
+ * @since 1.0
+ */
 public interface VisualStudioCodeGdbLaunch {
-    // TODO: Use display name instead
-    String getName();
+    /**
+     * Returns the display name to use in Visual Studio Code for this GDB launch.
+     */
+    String getDisplayName();
 
-    // GDB C++ specific
+    /**
+     * Returns the program executable to be launched by GDB.
+     */
     RegularFileProperty getProgramLocation();
-    RegularFileProperty getDebuggerLocation();
+
+    /**
+     * Returns the GDB executable location.
+     */
+    RegularFileProperty getGdbLocation();
+
+    /**
+     * Returns the preparatory launch Gradle task.
+     */
     Property<VisualStudioCodeGradleTask> getPreLaunchGradleTask();
 }

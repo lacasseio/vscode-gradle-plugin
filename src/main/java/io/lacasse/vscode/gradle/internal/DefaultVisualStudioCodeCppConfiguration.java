@@ -44,7 +44,7 @@ public class DefaultVisualStudioCodeCppConfiguration implements VisualStudioCode
 
     @Input
     @Override
-    public String getName() {
+    public String getDisplayName() {
         return name;
     }
 

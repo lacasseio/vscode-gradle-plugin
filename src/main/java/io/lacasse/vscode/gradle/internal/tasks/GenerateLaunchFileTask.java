@@ -36,12 +36,12 @@ public class GenerateLaunchFileTask extends JsonGeneratorTask<VisualStudioCodeLa
 
         for (VisualStudioCodeGdbLaunch tool : lauches.get()) {
             LaunchDescription launch = new LaunchDescription();
-            launch.setName(tool.getName());
+            launch.setName(tool.getDisplayName());
             launch.setProgram(tool.getProgramLocation().get().getAsFile().getAbsolutePath());
-            launch.setPreLaunchTask(tool.getPreLaunchGradleTask().isPresent() ? tool.getPreLaunchGradleTask().get().getName() : null);
+            launch.setPreLaunchTask(tool.getPreLaunchGradleTask().isPresent() ? tool.getPreLaunchGradleTask().get().getDisplayName() : null);
             launch.setMIMode("gdb");
             launch.setMiDebuggerServerAddress("localhost:4242");
-            launch.setMiDebuggerPath(tool.getDebuggerLocation().get().getAsFile().getAbsolutePath());
+            launch.setMiDebuggerPath(tool.getGdbLocation().get().getAsFile().getAbsolutePath());
             launch.setMiDebuggerArgs("\"--init-eval-command=file " + tool.getProgramLocation().get().getAsFile().getAbsolutePath() + "\" \"--init-eval-command=load\" \"--init-eval-command=break main\"");
 
             l.add(launch);

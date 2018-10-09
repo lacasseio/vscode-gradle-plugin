@@ -68,7 +68,7 @@ public class DefaultVisualStudioCodeGradleTask implements VisualStudioCodeGradle
     }
 
     @Override
-    public String getName() {
+    public String getDisplayName() {
         return name;
     }
 

@@ -26,10 +26,9 @@ import org.gradle.api.tasks.TaskProvider;
  */
 public interface VisualStudioCodeGradleTask {
     /**
-     * Returns the display name to use Visual Studio Code
+     * Returns the display name to use in Visual Studio Code for the referenced Gradle task.
      */
-    // TODO: Change to displayName
-    String getName();
+    String getDisplayName();
 
     TaskProvider<? extends Task> getTask();
 }
