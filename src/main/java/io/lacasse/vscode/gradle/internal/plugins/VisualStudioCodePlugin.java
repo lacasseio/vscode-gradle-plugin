@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package io.lacasse.vscode.gradle.plugins;
+package io.lacasse.vscode.gradle.internal.plugins;
 
 import io.lacasse.vscode.gradle.VisualStudioCodeExtension;
 import io.lacasse.vscode.gradle.VisualStudioCodeRootExtension;
 import io.lacasse.vscode.gradle.internal.DefaultVisualStudioCodeExtension;
 import io.lacasse.vscode.gradle.internal.DefaultVisualStudioCodeRootExtension;
-import io.lacasse.vscode.gradle.tasks.GenerateCppPropertiesFileTask;
-import io.lacasse.vscode.gradle.tasks.GenerateLaunchFileTask;
-import io.lacasse.vscode.gradle.tasks.GenerateTasksFileTask;
-import io.lacasse.vscode.gradle.tasks.GenerateWorkspaceFileTask;
+import io.lacasse.vscode.gradle.internal.tasks.GenerateCppPropertiesFileTask;
+import io.lacasse.vscode.gradle.internal.tasks.GenerateLaunchFileTask;
+import io.lacasse.vscode.gradle.internal.tasks.GenerateTasksFileTask;
+import io.lacasse.vscode.gradle.internal.tasks.GenerateWorkspaceFileTask;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.model.ObjectFactory;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.lacasse.vscode.gradle.tasks;
+package io.lacasse.vscode.gradle.internal.tasks;
 
 import org.gradle.plugins.ide.api.GeneratorTask;
 import org.gradle.plugins.ide.internal.generator.generator.PersistableConfigurationObject;

@@ -24,6 +24,13 @@ buildscript {
 }
 ```
 
+## Public API
+
+Anything that is located inside an internal package is considered implementation specific.
+You shouldn't rely on this code as it may be removed or change without notice.
+The behavior will stay the same without prior deprecation or major version change.
+If you need to use any internal API, please discuss it in a new issue with clear use case.
+
 ## Contribution
 
 Please open issues or provide PRs for any features or bugs this plugin may have.

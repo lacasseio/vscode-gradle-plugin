@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.lacasse.vscode.gradle.tasks;
+package io.lacasse.vscode.gradle.internal.tasks;
 
 import io.lacasse.vscode.gradle.internal.generator.JsonPersistableConfigurationObject;
 import io.lacasse.vscode.internal.schemas.launch.LaunchConfiguration;
