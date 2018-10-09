@@ -16,7 +16,7 @@
 
 package io.lacasse.vscode.internal.schemas.launch;
 
-import org.gradle.internal.impldep.com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName;
 
 public class LaunchDescription {
     private String name;

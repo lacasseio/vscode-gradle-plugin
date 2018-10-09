@@ -16,7 +16,7 @@
 
 package io.lacasse.vscode.internal.schemas.task;
 
-import org.gradle.internal.impldep.com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName;
 
 public class PresentationOptions {
     private final Reveal reveal = Reveal.SILENT;

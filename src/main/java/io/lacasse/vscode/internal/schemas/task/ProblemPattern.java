@@ -16,7 +16,7 @@
 
 package io.lacasse.vscode.internal.schemas.task;
 
-import org.gradle.internal.impldep.com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName;
 
 public class ProblemPattern {
     private String regexp;

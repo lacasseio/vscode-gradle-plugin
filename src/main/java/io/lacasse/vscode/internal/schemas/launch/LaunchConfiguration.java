@@ -23,7 +23,6 @@ public class LaunchConfiguration {
     private final String version = "0.2.0";
     private final List<LaunchDescription> configurations = new ArrayList<>();
 
-
     public String getVersion() {
         return version;
     }

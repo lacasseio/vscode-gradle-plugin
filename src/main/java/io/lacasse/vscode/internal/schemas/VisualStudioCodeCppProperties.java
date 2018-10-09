@@ -16,7 +16,7 @@
 
 package io.lacasse.vscode.internal.schemas;
 
-import org.gradle.internal.impldep.com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;

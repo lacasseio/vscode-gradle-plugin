@@ -21,7 +21,7 @@ import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
-import org.gradle.internal.impldep.org.apache.commons.io.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.gradle.language.cpp.CppBinary;
 
 import java.io.File;

@@ -11,6 +11,7 @@ dependencies {
     implementation(gradleApi())
     implementation("com.google.guava:guava:26.0-jre")
     implementation("com.google.code.gson:gson:2.8.5")
+    implementation("commons-io:commons-io:2.6")
     testImplementation(gradleTestKit())
     testImplementation("org.spockframework:spock-core:1.2-groovy-2.4") {
         exclude("groovy-all")

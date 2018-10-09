@@ -18,7 +18,7 @@ package io.lacasse.vscode.gradle.internal.tasks;
 
 import io.lacasse.vscode.gradle.internal.generator.JsonPersistableConfigurationObject;
 import io.lacasse.vscode.internal.schemas.CompileCommand;
-import org.gradle.internal.impldep.com.google.gson.reflect.TypeToken;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.util.ArrayList;
