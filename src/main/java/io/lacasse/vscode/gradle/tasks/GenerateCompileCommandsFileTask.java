@@ -14,15 +14,27 @@
  * limitations under the License.
  */
 
-package io.lacasse.vscode.gradle.internal.tasks;
+package io.lacasse.vscode.gradle.tasks;
 
+import io.lacasse.vscode.gradle.internal.tasks.CompileCommandsFile;
+import io.lacasse.vscode.gradle.internal.tasks.JsonGeneratorTask;
+import org.gradle.api.Transformer;
 import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.apache.commons.io.IOUtils;
+import org.gradle.api.tasks.TaskContainer;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.cpp.CppBinary;
+import org.gradle.language.cpp.tasks.CppCompile;
+import org.gradle.nativeplatform.platform.internal.NativePlatformInternal;
+import org.gradle.nativeplatform.toolchain.internal.NativeToolChainInternal;
+import org.gradle.nativeplatform.toolchain.internal.ToolType;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,7 +44,7 @@ import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.util.stream.Collectors;
 
-public class GenerateCompileCommandFileTask extends JsonGeneratorTask<CompileCommandsFile> {
+public class GenerateCompileCommandsFileTask extends JsonGeneratorTask<CompileCommandsFile> {
     private final RegularFileProperty compileCommandsLocation = newOutputFile();
     private final ConfigurableFileCollection sources = getProject().files();
     private final RegularFileProperty optionsFile = newInputFile();
@@ -99,5 +111,31 @@ public class GenerateCompileCommandFileTask extends JsonGeneratorTask<CompileCom
 
     public static String taskName(CppBinary binary) {
         return "generateCompileCommandsFor" + binary.getName();
+    }
+
+    public static TaskProvider<GenerateCompileCommandsFileTask> create(TaskContainer tasks, CppBinary binary) {
+        return tasks.register(GenerateCompileCommandsFileTask.taskName(binary), GenerateCompileCommandsFileTask.class, it -> {
+            ProviderFactory providerFactory = it.getProject().getProviders();
+            ProjectLayout projectLayout = it.getProject().getLayout();
+
+            it.setGroup("C++ Support");
+            it.setDescription("Generate compile_commands.json for '" + binary + "'");
+            it.dependsOn(binary.getCompileTask());
+            it.getCompiler().set(providerFactory.provider(() -> {
+                CppCompile compileTask = binary.getCompileTask().get();
+                RegularFileProperty f = projectLayout.fileProperty();
+                f.set(((NativeToolChainInternal)compileTask.getToolChain().get()).select((NativePlatformInternal) compileTask.getTargetPlatform().get()).locateTool(ToolType.CPP_COMPILER).getTool());
+                return f.get();
+            }));
+
+            it.getOptionsFile().set(providerFactory.provider(() -> {
+                CppCompile compileTask = binary.getCompileTask().get();
+                RegularFileProperty f = projectLayout.fileProperty();
+                f.set(new File(compileTask.getTemporaryDir(), "options.txt"));
+                return f.get();
+            }));
+            it.getSources().from(binary.getCompileTask().map((Transformer<FileCollection, CppCompile>) cppCompile -> cppCompile.getSource()));
+            it.setOutputFile(projectLayout.getBuildDirectory().file("cpp-support/" + binary.getName() + "/compile_commands.json").get().getAsFile());
+        });
     }
 }

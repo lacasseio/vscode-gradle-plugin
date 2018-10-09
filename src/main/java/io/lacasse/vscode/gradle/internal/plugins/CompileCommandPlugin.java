@@ -16,7 +16,7 @@
 
 package io.lacasse.vscode.gradle.internal.plugins;
 
-import io.lacasse.vscode.gradle.internal.tasks.GenerateCompileCommandFileTask;
+import io.lacasse.vscode.gradle.tasks.GenerateCompileCommandsFileTask;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -60,7 +60,7 @@ public class CompileCommandPlugin implements Plugin<Project> {
     private void createCompileCommandTask(TaskContainer tasks, CppComponent component) {
         component.getBinaries().whenElementKnown((Action<CppBinary>) binary -> {
             // TODO: Capitalize binary name
-            tasks.register(GenerateCompileCommandFileTask.taskName(binary), GenerateCompileCommandFileTask.class, it -> {
+            tasks.register(GenerateCompileCommandsFileTask.taskName(binary), GenerateCompileCommandsFileTask.class, it -> {
 
                 it.setGroup("C++ Support");
                 it.setDescription("Generate compile_commands.json for '" + binary + "'");
