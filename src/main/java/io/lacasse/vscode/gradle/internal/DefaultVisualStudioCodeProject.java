@@ -17,9 +17,9 @@
 package io.lacasse.vscode.gradle.internal;
 
 import com.google.common.collect.ImmutableList;
-import io.lacasse.vscode.gradle.VisualStudioCodeConfiguration;
+import io.lacasse.vscode.gradle.VisualStudioCodeCppConfiguration;
 import io.lacasse.vscode.gradle.VisualStudioCodeGradleTask;
-import io.lacasse.vscode.gradle.VisualStudioCodeLaunch;
+import io.lacasse.vscode.gradle.VisualStudioCodeGdbLaunch;
 import io.lacasse.vscode.gradle.VisualStudioCodeProject;
 import org.gradle.api.Action;
 import org.gradle.api.Task;
@@ -39,8 +39,8 @@ import java.util.Map;
 
 public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
     private final List<DefaultVisualStudioCodeGradleTask> tasks = new ArrayList<>();
-    private final List<DefaultVisualStudioCodeConfiguration> configurations = new ArrayList<>();
-    private final List<DefaultVisualStudioCodeLaunch> launches = new ArrayList<>();
+    private final List<DefaultVisualStudioCodeCppConfiguration> configurations = new ArrayList<>();
+    private final List<DefaultVisualStudioCodeGdbLaunch> launches = new ArrayList<>();
     private final ObjectFactory objectFactory;
     private final DirectoryProperty location;
 
@@ -98,14 +98,14 @@ public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
     }
 
     @Override
-    public void configuration(String name, Action<? super VisualStudioCodeConfiguration> action) {
-        DefaultVisualStudioCodeConfiguration result = objectFactory.newInstance(DefaultVisualStudioCodeConfiguration.class, name);
+    public void cppConfiguration(String name, Action<? super VisualStudioCodeCppConfiguration> action) {
+        DefaultVisualStudioCodeCppConfiguration result = objectFactory.newInstance(DefaultVisualStudioCodeCppConfiguration.class, name);
         configurations.add(result);
         action.execute(result);
     }
 
-    public static Action<? super VisualStudioCodeConfiguration> fromCompileTask(Provider<? extends CppCompile> compileTask) {
-        return (Action<VisualStudioCodeConfiguration>) it -> {
+    public static Action<? super VisualStudioCodeCppConfiguration> fromCompileTask(Provider<? extends CppCompile> compileTask) {
+        return (Action<VisualStudioCodeCppConfiguration>) it -> {
             it.getIncludes().from(compileTask.map((Transformer<Object, CppCompile>) cppCompile -> cppCompile.getIncludes().plus(cppCompile.getSystemIncludes())));
             it.getDefines().set(compileTask.map((Transformer<Iterable<? extends String>, CppCompile>) cppCompile -> {
                 Map<String, String> macros = new LinkedHashMap<>(cppCompile.getMacros());
@@ -129,18 +129,18 @@ public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
         };
     }
 
-    public List<DefaultVisualStudioCodeConfiguration> getConfigurations() {
+    public List<DefaultVisualStudioCodeCppConfiguration> getConfigurations() {
         return ImmutableList.copyOf(configurations);
     }
 
     @Override
-    public void gdbLaunch(String name, Action<? super VisualStudioCodeLaunch> action) {
-        DefaultVisualStudioCodeLaunch result = objectFactory.newInstance(DefaultVisualStudioCodeLaunch.class, name);
+    public void gdbLaunch(String name, Action<? super VisualStudioCodeGdbLaunch> action) {
+        DefaultVisualStudioCodeGdbLaunch result = objectFactory.newInstance(DefaultVisualStudioCodeGdbLaunch.class, name);
         launches.add(result);
         action.execute(result);
     }
 
-    public List<DefaultVisualStudioCodeLaunch> getLaunches() {
+    public List<DefaultVisualStudioCodeGdbLaunch> getLaunches() {
         return ImmutableList.copyOf(launches);
     }
 }

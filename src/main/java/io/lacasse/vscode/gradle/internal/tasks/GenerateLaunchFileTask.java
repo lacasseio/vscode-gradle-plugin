@@ -16,7 +16,7 @@
 
 package io.lacasse.vscode.gradle.internal.tasks;
 
-import io.lacasse.vscode.gradle.VisualStudioCodeLaunch;
+import io.lacasse.vscode.gradle.VisualStudioCodeGdbLaunch;
 import io.lacasse.vscode.internal.schemas.launch.LaunchDescription;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
@@ -28,13 +28,13 @@ import java.util.List;
 
 public class GenerateLaunchFileTask extends JsonGeneratorTask<VisualStudioCodeLaunchFile> {
     private final RegularFileProperty launchFileLocation = newOutputFile();
-    private final ListProperty<VisualStudioCodeLaunch> lauches = getProject().getObjects().listProperty(VisualStudioCodeLaunch.class);
+    private final ListProperty<VisualStudioCodeGdbLaunch> lauches = getProject().getObjects().listProperty(VisualStudioCodeGdbLaunch.class);
 
     @Override
     protected void configure(VisualStudioCodeLaunchFile object) {
         List<LaunchDescription> l = new ArrayList<>();
 
-        for (VisualStudioCodeLaunch tool : lauches.get()) {
+        for (VisualStudioCodeGdbLaunch tool : lauches.get()) {
             LaunchDescription launch = new LaunchDescription();
             launch.setName(tool.getName());
             launch.setProgram(tool.getProgramLocation().get().getAsFile().getAbsolutePath());
@@ -55,7 +55,7 @@ public class GenerateLaunchFileTask extends JsonGeneratorTask<VisualStudioCodeLa
         return new VisualStudioCodeLaunchFile();
     }
 
-    public ListProperty<VisualStudioCodeLaunch> getLaunches() {
+    public ListProperty<VisualStudioCodeGdbLaunch> getLaunches() {
         return lauches;
     }
 

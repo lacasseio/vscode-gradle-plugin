@@ -29,7 +29,7 @@ public class GenerateCppPropertiesFileTask extends JsonGeneratorTask<VisualStudi
     private final ListProperty<VisualStudioCodeConfiguration> configurations = getProject().getObjects().listProperty(VisualStudioCodeConfiguration.class);
 
     public GenerateCppPropertiesFileTask() {
-//        dependsOn((Callable<List<TaskProvider<?>>>) () -> configurations.get().stream().map(DefaultVisualStudioCodeConfiguration::getTask).collect(Collectors.toList()));
+//        dependsOn((Callable<List<TaskProvider<?>>>) () -> configurations.get().stream().map(DefaultVisualStudioCodeCppConfiguration::getTask).collect(Collectors.toList()));
     }
 
     @Override

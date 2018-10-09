@@ -17,26 +17,23 @@
 package io.lacasse.vscode.gradle.internal;
 
 import io.lacasse.vscode.gradle.VisualStudioCodeGradleTask;
-import io.lacasse.vscode.gradle.VisualStudioCodeLaunch;
+import io.lacasse.vscode.gradle.VisualStudioCodeGdbLaunch;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 
 import javax.inject.Inject;
 
-public class DefaultVisualStudioCodeLaunch implements VisualStudioCodeLaunch {
+public class DefaultVisualStudioCodeGdbLaunch implements VisualStudioCodeGdbLaunch {
     private final String name;
     private final RegularFileProperty programLocation;
     private final RegularFileProperty debuggerLocation;
     private final Property<VisualStudioCodeGradleTask> preLaunchGradleTask;
 
     @Inject
-    public DefaultVisualStudioCodeLaunch(String name, ProjectLayout projectLayout, ObjectFactory objectFactory) {
+    public DefaultVisualStudioCodeGdbLaunch(String name, ProjectLayout projectLayout, ObjectFactory objectFactory) {
         this.name = name;
         this.programLocation = projectLayout.fileProperty();
         this.debuggerLocation = projectLayout.fileProperty();

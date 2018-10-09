@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultVisualStudioCodeExtension implements VisualStudioCodeExtension {
-    private final List<DefaultVisualStudioCodeConfiguration> configuration = new ArrayList<>();
-    private final List<DefaultVisualStudioCodeLaunch> launches = new ArrayList<>();
+    private final List<DefaultVisualStudioCodeCppConfiguration> configuration = new ArrayList<>();
+    private final List<DefaultVisualStudioCodeGdbLaunch> launches = new ArrayList<>();
     private final DefaultVisualStudioCodeProject project;
 
     @Inject

@@ -16,7 +16,7 @@
 
 package io.lacasse.vscode.gradle.internal;
 
-import io.lacasse.vscode.gradle.VisualStudioCodeConfiguration;
+import io.lacasse.vscode.gradle.VisualStudioCodeCppConfiguration;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.RegularFileProperty;
@@ -28,14 +28,14 @@ import org.gradle.api.tasks.InputFiles;
 
 import javax.inject.Inject;
 
-public class DefaultVisualStudioCodeConfiguration implements VisualStudioCodeConfiguration {
+public class DefaultVisualStudioCodeCppConfiguration implements VisualStudioCodeCppConfiguration {
     private final String name;
     private final ConfigurableFileCollection includes;
     private final ListProperty<String> defines;
     private final RegularFileProperty compileCommandsLocation;
 
     @Inject
-    public DefaultVisualStudioCodeConfiguration(String name, ProjectLayout projectLayout, ObjectFactory objectFactory) {
+    public DefaultVisualStudioCodeCppConfiguration(String name, ProjectLayout projectLayout, ObjectFactory objectFactory) {
         this.name = name;
         this.includes = projectLayout.configurableFiles();
         this.defines = objectFactory.listProperty(String.class);

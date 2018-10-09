@@ -43,7 +43,7 @@ public interface VisualStudioCodeProject {
 
     VisualStudioCodeGradleTask backgroundTask(String name, TaskProvider<? extends Task> task);
 
-    void configuration(String name, Action<? super VisualStudioCodeConfiguration> action);
+    void cppConfiguration(String name, Action<? super VisualStudioCodeCppConfiguration> action);
 
-    void gdbLaunch(String name, Action<? super VisualStudioCodeLaunch> action);
+    void gdbLaunch(String name, Action<? super VisualStudioCodeGdbLaunch> action);
 }

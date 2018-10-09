@@ -16,14 +16,19 @@
 
 package io.lacasse.vscode.gradle;
 
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.provider.Property;
+import org.gradle.api.provider.ListProperty;
 
-// TODO: Look at how Java do it and figure this out ELSE make it explicitly specific to C++
-public interface VisualStudioCodeLaunch {
-    // TODO: Use display name instead
+public interface VisualStudioCodeCppConfiguration {
+    /**
+     * Returns the name of the configuration.
+     */
+    // TODO: use displayName instead
     String getName();
-    RegularFileProperty getProgramLocation();
-    RegularFileProperty getDebuggerLocation();
-    Property<VisualStudioCodeGradleTask> getPreLaunchGradleTask();
+
+    // C++ specific
+    ConfigurableFileCollection getIncludes();
+    ListProperty<String> getDefines();
+    RegularFileProperty getCompileCommandsLocation();
 }

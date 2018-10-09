@@ -16,19 +16,15 @@
 
 package io.lacasse.vscode.gradle;
 
-import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Property;
 
-// TODO: Divide C++ specific from generic OR rename to specific C++ configuration (aka look at how Java do it)
-public interface VisualStudioCodeConfiguration {
-    /**
-     * Returns the name of the configuration.
-     */
-    // TODO: use displayName instead
+public interface VisualStudioCodeGdbLaunch {
+    // TODO: Use display name instead
     String getName();
 
-    ConfigurableFileCollection getIncludes();
-    ListProperty<String> getDefines();
-    RegularFileProperty getCompileCommandsLocation();
+    // GDB C++ specific
+    RegularFileProperty getProgramLocation();
+    RegularFileProperty getDebuggerLocation();
+    Property<VisualStudioCodeGradleTask> getPreLaunchGradleTask();
 }
