@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package io.lacasse.vscode.gradle.tasks;
+package io.lacasse.vscode.gradle.internal.tasks;
 
-import io.lacasse.vscode.gradle.internal.tasks.CompileCommandsFile;
-import io.lacasse.vscode.gradle.internal.tasks.JsonGeneratorTask;
 import org.gradle.api.Transformer;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
@@ -111,31 +109,5 @@ public class GenerateCompileCommandsFileTask extends JsonGeneratorTask<CompileCo
 
     public static String taskName(CppBinary binary) {
         return "generateCompileCommandsFor" + binary.getName();
-    }
-
-    public static TaskProvider<GenerateCompileCommandsFileTask> create(TaskContainer tasks, CppBinary binary) {
-        return tasks.register(GenerateCompileCommandsFileTask.taskName(binary), GenerateCompileCommandsFileTask.class, it -> {
-            ProviderFactory providerFactory = it.getProject().getProviders();
-            ProjectLayout projectLayout = it.getProject().getLayout();
-
-            it.setGroup("C++ Support");
-            it.setDescription("Generate compile_commands.json for '" + binary + "'");
-            it.dependsOn(binary.getCompileTask());
-            it.getCompiler().set(providerFactory.provider(() -> {
-                CppCompile compileTask = binary.getCompileTask().get();
-                RegularFileProperty f = projectLayout.fileProperty();
-                f.set(((NativeToolChainInternal)compileTask.getToolChain().get()).select((NativePlatformInternal) compileTask.getTargetPlatform().get()).locateTool(ToolType.CPP_COMPILER).getTool());
-                return f.get();
-            }));
-
-            it.getOptionsFile().set(providerFactory.provider(() -> {
-                CppCompile compileTask = binary.getCompileTask().get();
-                RegularFileProperty f = projectLayout.fileProperty();
-                f.set(new File(compileTask.getTemporaryDir(), "options.txt"));
-                return f.get();
-            }));
-            it.getSources().from(binary.getCompileTask().map((Transformer<FileCollection, CppCompile>) cppCompile -> cppCompile.getSource()));
-            it.setOutputFile(projectLayout.getBuildDirectory().file("cpp-support/" + binary.getName() + "/compile_commands.json").get().getAsFile());
-        });
     }
 }

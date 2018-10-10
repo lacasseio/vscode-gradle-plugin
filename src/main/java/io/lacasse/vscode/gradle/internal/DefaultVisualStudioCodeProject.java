@@ -28,6 +28,7 @@ import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.cpp.tasks.CppCompile;
 
@@ -38,16 +39,18 @@ import java.util.List;
 import java.util.Map;
 
 public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
-    private final List<DefaultVisualStudioCodeGradleTask> tasks = new ArrayList<>();
+    private final List<DefaultVisualStudioCodeGradleTask> gradleTasks = new ArrayList<>();
     private final List<DefaultVisualStudioCodeCppConfiguration> configurations = new ArrayList<>();
     private final List<DefaultVisualStudioCodeGdbLaunch> launches = new ArrayList<>();
     private final ObjectFactory objectFactory;
     private final DirectoryProperty location;
+    private final TaskContainer tasks;
 
     @Inject
-    public DefaultVisualStudioCodeProject(ObjectFactory objectFactory, ProjectLayout projectLayout) {
+    public DefaultVisualStudioCodeProject(ObjectFactory objectFactory, ProjectLayout projectLayout, TaskContainer tasks) {
         this.objectFactory = objectFactory;
         this.location = projectLayout.directoryProperty();
+        this.tasks = tasks;
     }
 
     @Override
@@ -58,7 +61,7 @@ public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
     @Override
     public VisualStudioCodeGradleTask task(String name, TaskProvider<? extends Task> task) {
         DefaultVisualStudioCodeGradleTask result = new DefaultVisualStudioCodeGradleTask(name, task, false, false, false, false, null);
-        tasks.add(result);
+        gradleTasks.add(result);
         return result;
     }
 
@@ -70,7 +73,7 @@ public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
     @Override
     public VisualStudioCodeGradleTask testTask(String name, TaskProvider<? extends Task> task, boolean isDefault) {
         DefaultVisualStudioCodeGradleTask result = new DefaultVisualStudioCodeGradleTask(name, task, false, true, isDefault, false, null);
-        tasks.add(result);
+        gradleTasks.add(result);
         return result;
     }
 
@@ -82,24 +85,24 @@ public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
     @Override
     public VisualStudioCodeGradleTask buildTask(String name, TaskProvider<? extends Task> task, boolean isDefault) {
         DefaultVisualStudioCodeGradleTask result = new DefaultVisualStudioCodeGradleTask(name, task, true, false, isDefault, false, "$gcc");
-        tasks.add(result);
+        gradleTasks.add(result);
         return result;
     }
 
     @Override
     public VisualStudioCodeGradleTask backgroundTask(String name, TaskProvider<? extends Task> task) {
         DefaultVisualStudioCodeGradleTask result = new DefaultVisualStudioCodeGradleTask(name, task, false, false, false, true, null);
-        tasks.add(result);
+        gradleTasks.add(result);
         return result;
     }
 
     public List<DefaultVisualStudioCodeGradleTask> getGradleTasks() {
-        return ImmutableList.copyOf(tasks);
+        return ImmutableList.copyOf(gradleTasks);
     }
 
     @Override
     public void cppConfiguration(String name, Action<? super VisualStudioCodeCppConfiguration> action) {
-        DefaultVisualStudioCodeCppConfiguration result = objectFactory.newInstance(DefaultVisualStudioCodeCppConfiguration.class, name);
+        DefaultVisualStudioCodeCppConfiguration result = objectFactory.newInstance(DefaultVisualStudioCodeCppConfiguration.class, name, tasks);
         configurations.add(result);
         action.execute(result);
     }

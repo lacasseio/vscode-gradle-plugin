@@ -16,7 +16,7 @@
 
 package io.lacasse.vscode.gradle.internal.plugins;
 
-import io.lacasse.vscode.gradle.tasks.GenerateCompileCommandsFileTask;
+import io.lacasse.vscode.gradle.internal.tasks.GenerateCompileCommandsFileTask;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;

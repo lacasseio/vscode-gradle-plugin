@@ -20,6 +20,7 @@ import io.lacasse.vscode.gradle.VisualStudioCodeRootExtension;
 import io.lacasse.vscode.gradle.VisualStudioCodeWorkspace;
 import org.gradle.api.Action;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.tasks.TaskContainer;
 
 import javax.inject.Inject;
 
@@ -27,8 +28,8 @@ public class DefaultVisualStudioCodeRootExtension extends DefaultVisualStudioCod
     private final DefaultVisualStudioCodeWorkspace workspace;
 
     @Inject
-    public DefaultVisualStudioCodeRootExtension(ObjectFactory objectFactory) {
-        super(objectFactory);
+    public DefaultVisualStudioCodeRootExtension(ObjectFactory objectFactory, TaskContainer tasks) {
+        super(objectFactory, tasks);
         workspace = objectFactory.newInstance(DefaultVisualStudioCodeWorkspace.class);
     }
 

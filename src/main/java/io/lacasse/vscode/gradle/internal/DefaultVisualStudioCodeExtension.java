@@ -20,19 +20,18 @@ import io.lacasse.vscode.gradle.VisualStudioCodeExtension;
 import io.lacasse.vscode.gradle.VisualStudioCodeProject;
 import org.gradle.api.Action;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.tasks.TaskContainer;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultVisualStudioCodeExtension implements VisualStudioCodeExtension {
-    private final List<DefaultVisualStudioCodeCppConfiguration> configuration = new ArrayList<>();
-    private final List<DefaultVisualStudioCodeGdbLaunch> launches = new ArrayList<>();
     private final DefaultVisualStudioCodeProject project;
 
     @Inject
-    public DefaultVisualStudioCodeExtension(ObjectFactory objectFactory) {
-        this.project = objectFactory.newInstance(DefaultVisualStudioCodeProject.class);
+    public DefaultVisualStudioCodeExtension(ObjectFactory objectFactory, TaskContainer tasks) {
+        this.project = objectFactory.newInstance(DefaultVisualStudioCodeProject.class, tasks);
     }
 
     @Override

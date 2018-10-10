@@ -57,7 +57,7 @@ public class VisualStudioCodePlugin extends IdePlugin {
 
     @Override
     protected void onApply(final Project project) {
-        DefaultVisualStudioCodeExtension visualStudioCode = createVisualStudioCodeExtension(project.getExtensions(), project.getObjects());
+        DefaultVisualStudioCodeExtension visualStudioCode = createVisualStudioCodeExtension(project.getExtensions(), project.getObjects(), project.getTasks());
 
         configureLifecycleTask(getLifecycleTask());
         configureCleanTask((TaskProvider<? extends Delete>) getCleanTask(), visualStudioCode);
@@ -108,14 +108,14 @@ public class VisualStudioCodePlugin extends IdePlugin {
         });
     }
 
-    private DefaultVisualStudioCodeExtension createVisualStudioCodeExtension(ExtensionContainer extensions, ObjectFactory objectFactory) {
+    private DefaultVisualStudioCodeExtension createVisualStudioCodeExtension(ExtensionContainer extensions, ObjectFactory objectFactory, TaskContainer tasks) {
         if (isRoot()) {
-            DefaultVisualStudioCodeRootExtension visualStudioCode = objectFactory.newInstance(DefaultVisualStudioCodeRootExtension.class);
+            DefaultVisualStudioCodeRootExtension visualStudioCode = objectFactory.newInstance(DefaultVisualStudioCodeRootExtension.class, tasks);
             extensions.add(VisualStudioCodeRootExtension.class, "visualStudioCode", visualStudioCode);
             return visualStudioCode;
         }
 
-        DefaultVisualStudioCodeExtension visualStudioCode = objectFactory.newInstance(DefaultVisualStudioCodeExtension.class);
+        DefaultVisualStudioCodeExtension visualStudioCode = objectFactory.newInstance(DefaultVisualStudioCodeExtension.class, tasks);
         extensions.add(VisualStudioCodeExtension.class, "visualStudioCode", visualStudioCode);
         return visualStudioCode;
     }

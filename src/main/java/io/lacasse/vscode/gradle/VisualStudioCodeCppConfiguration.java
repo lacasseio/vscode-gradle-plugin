@@ -17,8 +17,11 @@
 package io.lacasse.vscode.gradle;
 
 import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.RegularFile;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Provider;
+import org.gradle.language.cpp.CppBinary;
 
 /**
  * A C++ configuration used for intellisense by the {@code ms-vscode.cpptools} Visual Studio Code extension.
@@ -45,4 +48,6 @@ public interface VisualStudioCodeCppConfiguration {
      * Returns the location of the compile_commands.json file.
      */
     RegularFileProperty getCompileCommandsLocation();
+
+    Provider<RegularFile> generateCompileCommandsFileFor(CppBinary binary);
 }

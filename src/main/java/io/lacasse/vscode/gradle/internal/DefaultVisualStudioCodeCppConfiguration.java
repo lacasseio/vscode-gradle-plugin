@@ -17,29 +17,45 @@
 package io.lacasse.vscode.gradle.internal;
 
 import io.lacasse.vscode.gradle.VisualStudioCodeCppConfiguration;
+import io.lacasse.vscode.gradle.internal.tasks.GenerateCompileCommandsFileTask;
+import org.gradle.api.Transformer;
 import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.ProjectLayout;
+import org.gradle.api.file.RegularFile;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.TaskContainer;
+import org.gradle.api.tasks.TaskProvider;
+import org.gradle.language.cpp.CppBinary;
+import org.gradle.language.cpp.tasks.CppCompile;
+import org.gradle.nativeplatform.platform.internal.NativePlatformInternal;
+import org.gradle.nativeplatform.toolchain.internal.NativeToolChainInternal;
+import org.gradle.nativeplatform.toolchain.internal.ToolType;
 
 import javax.inject.Inject;
+import java.io.File;
 
 public class DefaultVisualStudioCodeCppConfiguration implements VisualStudioCodeCppConfiguration {
     private final String name;
     private final ConfigurableFileCollection includes;
     private final ListProperty<String> defines;
     private final RegularFileProperty compileCommandsLocation;
+    private final TaskContainer tasks;
 
     @Inject
-    public DefaultVisualStudioCodeCppConfiguration(String name, ProjectLayout projectLayout, ObjectFactory objectFactory) {
+    public DefaultVisualStudioCodeCppConfiguration(String name, ProjectLayout projectLayout, ObjectFactory objectFactory, TaskContainer tasks) {
         this.name = name;
         this.includes = projectLayout.configurableFiles();
         this.defines = objectFactory.listProperty(String.class);
         this.compileCommandsLocation = projectLayout.fileProperty();
+        this.tasks = tasks;
     }
 
     @Input
@@ -64,5 +80,32 @@ public class DefaultVisualStudioCodeCppConfiguration implements VisualStudioCode
     @Override
     public RegularFileProperty getCompileCommandsLocation() {
         return compileCommandsLocation;
+    }
+
+    @Override
+    public Provider<RegularFile> generateCompileCommandsFileFor(CppBinary binary) {
+        return tasks.register(GenerateCompileCommandsFileTask.taskName(binary), GenerateCompileCommandsFileTask.class, it -> {
+            ProviderFactory providerFactory = it.getProject().getProviders();
+            ProjectLayout projectLayout = it.getProject().getLayout();
+
+            it.setGroup("C++ Support");
+            it.setDescription("Generate compile_commands.json for '" + binary + "'");
+            it.dependsOn(binary.getCompileTask());
+            it.getCompiler().set(providerFactory.provider(() -> {
+                CppCompile compileTask = binary.getCompileTask().get();
+                RegularFileProperty f = projectLayout.fileProperty();
+                f.set(((NativeToolChainInternal)compileTask.getToolChain().get()).select((NativePlatformInternal) compileTask.getTargetPlatform().get()).locateTool(ToolType.CPP_COMPILER).getTool());
+                return f.get();
+            }));
+
+            it.getOptionsFile().set(providerFactory.provider(() -> {
+                CppCompile compileTask = binary.getCompileTask().get();
+                RegularFileProperty f = projectLayout.fileProperty();
+                f.set(new File(compileTask.getTemporaryDir(), "options.txt"));
+                return f.get();
+            }));
+            it.getSources().from(binary.getCompileTask().map((Transformer<FileCollection, CppCompile>) cppCompile -> cppCompile.getSource()));
+            it.setOutputFile(projectLayout.getBuildDirectory().file("cpp-support/" + binary.getName() + "/compile_commands.json").get().getAsFile());
+        }).map(it -> it.getCompileCommandsFileLocation().get());
     }
 }
