@@ -47,15 +47,13 @@ public class DefaultVisualStudioCodeCppConfiguration implements VisualStudioCode
     private final ConfigurableFileCollection includes;
     private final ListProperty<String> defines;
     private final RegularFileProperty compileCommandsLocation;
-    private final TaskContainer tasks;
 
     @Inject
-    public DefaultVisualStudioCodeCppConfiguration(String name, ProjectLayout projectLayout, ObjectFactory objectFactory, TaskContainer tasks) {
+    public DefaultVisualStudioCodeCppConfiguration(String name, ProjectLayout projectLayout, ObjectFactory objectFactory) {
         this.name = name;
         this.includes = projectLayout.configurableFiles();
         this.defines = objectFactory.listProperty(String.class);
         this.compileCommandsLocation = projectLayout.fileProperty();
-        this.tasks = tasks;
     }
 
     @Input
@@ -80,32 +78,5 @@ public class DefaultVisualStudioCodeCppConfiguration implements VisualStudioCode
     @Override
     public RegularFileProperty getCompileCommandsLocation() {
         return compileCommandsLocation;
-    }
-
-    @Override
-    public Provider<RegularFile> generateCompileCommandsFileFor(CppBinary binary) {
-        return tasks.register(GenerateCompileCommandsFileTask.taskName(binary), GenerateCompileCommandsFileTask.class, it -> {
-            ProviderFactory providerFactory = it.getProject().getProviders();
-            ProjectLayout projectLayout = it.getProject().getLayout();
-
-            it.setGroup("C++ Support");
-            it.setDescription("Generate compile_commands.json for '" + binary + "'");
-            it.dependsOn(binary.getCompileTask());
-            it.getCompiler().set(providerFactory.provider(() -> {
-                CppCompile compileTask = binary.getCompileTask().get();
-                RegularFileProperty f = projectLayout.fileProperty();
-                f.set(((NativeToolChainInternal)compileTask.getToolChain().get()).select((NativePlatformInternal) compileTask.getTargetPlatform().get()).locateTool(ToolType.CPP_COMPILER).getTool());
-                return f.get();
-            }));
-
-            it.getOptionsFile().set(providerFactory.provider(() -> {
-                CppCompile compileTask = binary.getCompileTask().get();
-                RegularFileProperty f = projectLayout.fileProperty();
-                f.set(new File(compileTask.getTemporaryDir(), "options.txt"));
-                return f.get();
-            }));
-            it.getSources().from(binary.getCompileTask().map((Transformer<FileCollection, CppCompile>) cppCompile -> cppCompile.getSource()));
-            it.setOutputFile(projectLayout.getBuildDirectory().file("cpp-support/" + binary.getName() + "/compile_commands.json").get().getAsFile());
-        }).map(it -> it.getCompileCommandsFileLocation().get());
     }
 }

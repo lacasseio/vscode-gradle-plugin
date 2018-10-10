@@ -28,10 +28,6 @@ gradlePlugin {
             id = "io.lacasse.vscode"
             implementationClass = "io.lacasse.vscode.gradle.internal.plugins.VisualStudioCodePlugin"
         }
-        create("compileCommands") {
-            id = "io.lacasse.compile-commands"
-            implementationClass = "io.lacasse.vscode.gradle.internal.plugins.CompileCommandPlugin"
-        }
     }
 }
 
