@@ -30,8 +30,8 @@ public class DefaultVisualStudioCodeExtension implements VisualStudioCodeExtensi
     private final DefaultVisualStudioCodeProject project;
 
     @Inject
-    public DefaultVisualStudioCodeExtension(ObjectFactory objectFactory, TaskContainer tasks) {
-        this.project = objectFactory.newInstance(DefaultVisualStudioCodeProject.class, tasks);
+    public DefaultVisualStudioCodeExtension(ObjectFactory objectFactory) {
+        this.project = objectFactory.newInstance(DefaultVisualStudioCodeProject.class);
     }
 
     @Override

@@ -28,8 +28,8 @@ public class DefaultVisualStudioCodeRootExtension extends DefaultVisualStudioCod
     private final DefaultVisualStudioCodeWorkspace workspace;
 
     @Inject
-    public DefaultVisualStudioCodeRootExtension(ObjectFactory objectFactory, TaskContainer tasks) {
-        super(objectFactory, tasks);
+    public DefaultVisualStudioCodeRootExtension(ObjectFactory objectFactory) {
+        super(objectFactory);
         workspace = objectFactory.newInstance(DefaultVisualStudioCodeWorkspace.class);
     }
 

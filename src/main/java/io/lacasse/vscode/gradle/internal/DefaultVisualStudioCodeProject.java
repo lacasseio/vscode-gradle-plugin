@@ -23,6 +23,7 @@ import io.lacasse.vscode.gradle.VisualStudioCodeGdbLaunch;
 import io.lacasse.vscode.gradle.VisualStudioCodeProject;
 import io.lacasse.vscode.gradle.internal.tasks.GenerateCompileCommandsFileTask;
 import org.gradle.api.Action;
+import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.Transformer;
 import org.gradle.api.file.DirectoryProperty;
@@ -54,13 +55,11 @@ public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
     private final List<DefaultVisualStudioCodeGdbLaunch> launches = new ArrayList<>();
     private final ObjectFactory objectFactory;
     private final DirectoryProperty location;
-    private final TaskContainer tasks;
 
     @Inject
-    public DefaultVisualStudioCodeProject(ObjectFactory objectFactory, ProjectLayout projectLayout, TaskContainer tasks) {
+    public DefaultVisualStudioCodeProject(ObjectFactory objectFactory, ProjectLayout projectLayout) {
         this.objectFactory = objectFactory;
         this.location = projectLayout.directoryProperty();
-        this.tasks = tasks;
     }
 
     @Override
@@ -118,7 +117,7 @@ public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
     }
 
     // Kind of public... from Groovy's perspective.
-    public Action<? super VisualStudioCodeCppConfiguration> fromBinary(CppBinary binary) {
+    public Action<? super VisualStudioCodeCppConfiguration> fromBinary(Project project, CppBinary binary) {
         return (Action<VisualStudioCodeCppConfiguration>) it -> {
             Provider<? extends CppCompile> compileTask = binary.getCompileTask();
 
@@ -143,7 +142,7 @@ public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
                 return result;
             }));
 
-            it.getCompileCommandsLocation().set(generateCompileCommandsFileFor(tasks, binary));
+            it.getCompileCommandsLocation().set(generateCompileCommandsFileFor(project.getTasks(), binary));
         };
     }
 
