@@ -98,7 +98,7 @@ public class VisualStudioCodePlugin extends IdePlugin {
     }
 
     private static void configureCleanTask(TaskProvider<? extends Delete> cleanTask, DefaultVisualStudioCodeExtension visualStudioCode) {
-        cleanTask.configure((it) -> ((Delete)it).delete(visualStudioCode.getProject().getLocation()));
+        cleanTask.configure((it) -> it.delete(visualStudioCode.getProject().getLocation()));
     }
 
     private static TaskProvider<GenerateLaunchFileTask> createLaunchFileTask(TaskContainer tasks, ProviderFactory providerFactory, DefaultVisualStudioCodeExtension visualStudioCode) {
