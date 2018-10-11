@@ -142,8 +142,6 @@ public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
                 return result;
             }));
 
-            System.out.println("NAME : " + project.getName());
-            System.out.println(GenerateCompileCommandsFileTask.taskName(binary));
             it.getCompileCommandsLocation().set(generateCompileCommandsFileFor(project.getTasks(), binary));
         };
     }
