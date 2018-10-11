@@ -171,7 +171,8 @@ public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
             }));
             it.getSources().from(binary.getCompileTask().map((Transformer<FileCollection, CppCompile>) cppCompile -> cppCompile.getSource()));
             it.setOutputFile(projectLayout.getBuildDirectory().file("cpp-support/" + binary.getName() + "/compile_commands.json").get().getAsFile());
-        }).map(it -> it.getCompileCommandsFileLocation().get());
+        }).get().getCompileCommandsFileLocation();
+        // TODO: Use flatMap(it -> it.getCompileCommandsFileLocation()) when 5.0-rc-1 is released
     }
 
     public List<DefaultVisualStudioCodeCppConfiguration> getConfigurations() {
