@@ -39,8 +39,8 @@ class CustomConfigurationUsingCppBinaryTaskIntegrationTest extends Specification
         expect:
         succeed "vscode"
 
-        assertTasksExecuted([vscodeTasks(), ":cpp:generateCompileCommandsFormainDebug", ":cpp:generateCompileCommandsFormainRelease"].flatten())
-        assertTasksNotSkipped([vscodeTasks(), ":cpp:generateCompileCommandsFormainDebug", ":cpp:generateCompileCommandsFormainRelease"].flatten())
+        assertTasksExecuted([vscodeTasks(), ":cpp:generateMainDebugCompileCommands", ":cpp:generateMainReleaseCompileCommands"].flatten())
+        assertTasksNotSkipped([vscodeTasks(), ":cpp:generateMainDebugCompileCommands", ":cpp:generateMainReleaseCompileCommands"].flatten())
     }
 
     // can generate configuration when no source files (options.txt is not generated)

@@ -44,6 +44,8 @@ import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.text.WordUtils.capitalize;
+
 public class GenerateCompileCommandsFileTask extends JsonGeneratorTask<CompileCommandsFile> {
     private final RegularFileProperty compileCommandsLocation = getProject().getObjects().fileProperty();
     private final ConfigurableFileCollection sources = getProject().files();
@@ -114,6 +116,6 @@ public class GenerateCompileCommandsFileTask extends JsonGeneratorTask<CompileCo
     }
 
     public static String taskName(CppBinary binary) {
-        return "generateCompileCommandsFor" + binary.getName();
+        return "generate" + capitalize(binary.getName()) + "CompileCommands";
     }
 }
