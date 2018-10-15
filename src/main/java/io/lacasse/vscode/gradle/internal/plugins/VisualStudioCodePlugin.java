@@ -32,6 +32,9 @@ import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.Delete;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.language.cpp.CppApplication;
+import org.gradle.language.cpp.CppComponent;
+import org.gradle.language.cpp.CppExecutable;
 import org.gradle.plugins.ide.internal.IdeArtifactRegistry;
 import org.gradle.plugins.ide.internal.IdePlugin;
 import org.gradle.plugins.ide.internal.IdeProjectMetadata;
@@ -77,7 +80,7 @@ public class VisualStudioCodePlugin extends IdePlugin {
             addWorker(generateWorkspaceFileTask, generateWorkspaceFileTask.getName());
         }
 
-//        configureNativePlugin(visualStudioCode);
+        configureNativePlugin(visualStudioCode);
     }
 
     private void configureVisualStudioCodeExtension(DefaultVisualStudioCodeExtension visualStudioCode) {
@@ -127,25 +130,27 @@ public class VisualStudioCodePlugin extends IdePlugin {
         });
     }
 
-//    private void configureNativePlugin(VisualStudioCodeExtension visualStudioCode) {
-//        project.getPluginManager().withPlugin("cpp-application", appliedPlugin -> configureNativeComponent(visualStudioCode, (CppComponent) project.getExtensions().getByName("application"), project.getTasks()));
-//
+    private void configureNativePlugin(VisualStudioCodeExtension visualStudioCode) {
+        project.getPluginManager().withPlugin("cpp-application", appliedPlugin -> configureNativeComponent(visualStudioCode, (CppComponent) project.getExtensions().getByName("application"), project.getTasks()));
+
 //        project.getPluginManager().withPlugin("cpp-library", appliedPlugin -> configureNativeComponent(visualStudioCode, (CppComponent) project.getExtensions().getByName("library"), project.getTasks()));
-//    }
+    }
 //
-//    private void configureNativeComponent(VisualStudioCodeExtension visualStudioCode, CppComponent component, TaskContainer task) {
-//        component.getBinaries().whenElementKnown(binary -> {
+    private void configureNativeComponent(VisualStudioCodeExtension visualStudioCode, CppComponent component, TaskContainer task) {
+        component.getBinaries().whenElementKnown(binary -> {
 //            if (binary instanceof CppSharedLibrary) {
-//                visualStudioCode.getProject().task("Build " + binary.getDisplayName(), task.named(((CppSharedLibrary) binary).getLinkTask().get().getDisplayName()));
+//                visualStudioCode.getProject().task("Build " + binary.getName(), task.named(((CppSharedLibrary) binary).getLinkTask().get().getName()));
 //            } else if (binary instanceof CppStaticLibrary) {
-//                visualStudioCode.getProject().task("Build " + binary.getDisplayName(), task.named(((CppStaticLibrary) binary).getCreateTask().get().getDisplayName()));
+//                visualStudioCode.getProject().task("Build " + binary.getName(), task.named(((CppStaticLibrary) binary).getCreateTask().get().getName()));
 //            } else if (binary instanceof CppExecutable) {
-//                visualStudioCode.getProject().task("Build " + binary.getDisplayName(), task.named(((CppExecutable) binary).getLinkTask().get().getDisplayName()));
+                visualStudioCode.getProject().cppConfiguration(binary.getName(), (it) -> it.configureFromBinary(binary));
+                // TODO: Implementation knowledge on what is the development binary
+                visualStudioCode.getProject().buildTask("Build " + binary.getName(), task.named(((CppExecutable) binary).getLinkTask().get().getName()), !binary.isOptimized());
 //            } else {
 //                throw new IllegalArgumentException();
 //            }
-//        });
-//    }
+        });
+    }
 
     private static TaskProvider<GenerateWorkspaceFileTask> createWorkspaceFileTask(TaskContainer tasks, IdeArtifactRegistry artifactRegistry, DefaultVisualStudioCodeRootExtension visualStudioCode) {
         return tasks.register("vscodeWorkspace", GenerateWorkspaceFileTask.class, task -> {

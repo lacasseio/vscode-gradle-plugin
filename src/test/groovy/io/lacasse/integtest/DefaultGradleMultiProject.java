@@ -15,7 +15,7 @@ public class DefaultGradleMultiProject extends ExternalResource implements Gradl
     public File getBuildFile() {
         try {
             if (buildFile == null) {
-                buildFile = new File(testProjectDir.getRoot(), "build.gradle");
+                buildFile = new File(getProjectDir(), "build.gradle");
                 buildFile.createNewFile();
             }
             return buildFile;
@@ -36,13 +36,20 @@ public class DefaultGradleMultiProject extends ExternalResource implements Gradl
     public File getSettingsFile() {
         try {
             if (settingsFile == null) {
-                settingsFile = new File(testProjectDir.getRoot(), "settings.gradle");
+                settingsFile = new File(getProjectDir(), "settings.gradle");
                 settingsFile.createNewFile();
             }
             return settingsFile;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    @Override
+    public TestFile file(String path) {
+        TestFile result = new TestFile(new File(getProjectDir(), path));
+        result.getParentFile().mkdirs();
+        return result;
     }
 
     @Override
