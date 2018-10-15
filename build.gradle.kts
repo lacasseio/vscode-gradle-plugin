@@ -13,7 +13,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.5")
     implementation("commons-io:commons-io:2.6")
     testImplementation(gradleTestKit())
-    testImplementation("org.spockframework:spock-core:1.2-groovy-2.4") {
+    testImplementation("org.spockframework:spock-core:1.2-groovy-2.5") {
         exclude("groovy-all")
     }
 }
