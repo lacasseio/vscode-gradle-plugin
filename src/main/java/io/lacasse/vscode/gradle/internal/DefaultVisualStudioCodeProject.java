@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
     private final List<DefaultVisualStudioCodeGradleTask> gradleTasks = new ArrayList<>();
@@ -55,11 +56,15 @@ public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
     private final List<DefaultVisualStudioCodeGdbLaunch> launches = new ArrayList<>();
     private final ObjectFactory objectFactory;
     private final DirectoryProperty location;
+    private final ProjectLayout projectLayout;
+    private final ProviderFactory providerFactory;
 
     @Inject
-    public DefaultVisualStudioCodeProject(ObjectFactory objectFactory, ProjectLayout projectLayout) {
+    public DefaultVisualStudioCodeProject(ObjectFactory objectFactory, ProjectLayout projectLayout, ProviderFactory providerFactory) {
         this.objectFactory = objectFactory;
         this.location = projectLayout.directoryProperty();
+        this.projectLayout = projectLayout;
+        this.providerFactory = providerFactory;
     }
 
     @Override
@@ -114,63 +119,6 @@ public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
         DefaultVisualStudioCodeCppConfiguration result = objectFactory.newInstance(DefaultVisualStudioCodeCppConfiguration.class, name);
         configurations.add(result);
         action.execute(result);
-    }
-
-    // Kind of public... from Groovy's perspective.
-    public Action<? super VisualStudioCodeCppConfiguration> fromBinary(Project project, CppBinary binary) {
-        return (Action<VisualStudioCodeCppConfiguration>) it -> {
-            Provider<? extends CppCompile> compileTask = binary.getCompileTask();
-
-            it.getIncludes().from(compileTask.map((Transformer<Object, CppCompile>) cppCompile -> cppCompile.getIncludes().plus(cppCompile.getSystemIncludes())));
-            it.getDefines().set(compileTask.map((Transformer<Iterable<? extends String>, CppCompile>) cppCompile -> {
-                Map<String, String> macros = new LinkedHashMap<>(cppCompile.getMacros());
-                for (String arg : cppCompile.getCompilerArgs().get()) {
-                    if (arg.startsWith("-D")) {
-                        // TODO: Good approximation
-                        macros.put(arg.substring(2), null);
-                    }
-                }
-
-                List<String> result = new ArrayList<>();
-                for (Map.Entry<String, String> e : macros.entrySet()) {
-                    String macro = e.getKey();
-                    if (e.getValue() != null) {
-                        macro += "=" + e.getValue();
-                    }
-                    result.add(macro);
-                }
-                return result;
-            }));
-
-            it.getCompileCommandsLocation().set(generateCompileCommandsFileFor(project.getTasks(), binary));
-        };
-    }
-
-    private static Provider<RegularFile> generateCompileCommandsFileFor(TaskContainer tasks, CppBinary binary) {
-        return tasks.register(GenerateCompileCommandsFileTask.taskName(binary), GenerateCompileCommandsFileTask.class, it -> {
-            ProviderFactory providerFactory = it.getProject().getProviders();
-            ProjectLayout projectLayout = it.getProject().getLayout();
-
-            it.setGroup("C++ Support");
-            it.setDescription("Generate compile_commands.json for '" + binary + "'");
-            it.dependsOn(binary.getCompileTask());
-            it.getCompiler().set(providerFactory.provider(() -> {
-                CppCompile compileTask = binary.getCompileTask().get();
-                RegularFileProperty f = projectLayout.fileProperty();
-                f.set(((NativeToolChainInternal)compileTask.getToolChain().get()).select((NativePlatformInternal) compileTask.getTargetPlatform().get()).locateTool(ToolType.CPP_COMPILER).getTool());
-                return f.get();
-            }));
-
-            it.getOptionsFile().set(providerFactory.provider(() -> {
-                CppCompile compileTask = binary.getCompileTask().get();
-                RegularFileProperty f = projectLayout.fileProperty();
-                f.set(new File(compileTask.getTemporaryDir(), "options.txt"));
-                return f.get();
-            }));
-            it.getSources().from(binary.getCompileTask().map((Transformer<FileCollection, CppCompile>) cppCompile -> cppCompile.getSource()));
-            it.setOutputFile(projectLayout.getBuildDirectory().file("cpp-support/" + binary.getName() + "/compile_commands.json").get().getAsFile());
-        }).get().getCompileCommandsFileLocation();
-        // TODO: Use flatMap(it -> it.getCompileCommandsFileLocation()) when 5.0-rc-1 is released
     }
 
     public List<DefaultVisualStudioCodeCppConfiguration> getConfigurations() {

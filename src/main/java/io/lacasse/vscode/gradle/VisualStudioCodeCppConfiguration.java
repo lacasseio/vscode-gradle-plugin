@@ -48,4 +48,9 @@ public interface VisualStudioCodeCppConfiguration {
      * Returns the location of the compile_commands.json file.
      */
     RegularFileProperty getCompileCommandsLocation();
+
+    /**
+     * Configure C++ configuration from a {@code CppBinary}.
+     */
+    void configureFromBinary(CppBinary binary);
 }

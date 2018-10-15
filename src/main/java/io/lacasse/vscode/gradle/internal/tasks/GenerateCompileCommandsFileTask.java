@@ -26,6 +26,8 @@ import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.apache.commons.io.IOUtils;
+import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.cpp.CppBinary;
@@ -43,16 +45,19 @@ import java.nio.charset.Charset;
 import java.util.stream.Collectors;
 
 public class GenerateCompileCommandsFileTask extends JsonGeneratorTask<CompileCommandsFile> {
-    private final RegularFileProperty compileCommandsLocation = newOutputFile();
+    private final RegularFileProperty compileCommandsLocation = getProject().getObjects().fileProperty();
     private final ConfigurableFileCollection sources = getProject().files();
-    private final RegularFileProperty optionsFile = newInputFile();
-    private final RegularFileProperty compiler = newInputFile();
+    private final RegularFileProperty optionsFile = getProject().getObjects().fileProperty();
+    private final RegularFileProperty compiler = getProject().getObjects().fileProperty();
 
     @Override
     protected void configure(CompileCommandsFile object) {
-        String compilerFlags = getCompilerFlags();
-        String compilerPath = getCompiler().get().getAsFile().getAbsolutePath();
-        String command = compilerPath + " " + compilerFlags;
+        String command = null;
+        if (optionsFile.isPresent() && optionsFile.getAsFile().get().exists()) {
+            String compilerFlags = getCompilerFlags();
+            String compilerPath = getCompiler().get().getAsFile().getAbsolutePath();
+            command = compilerPath + " " + compilerFlags;
+        }
 
         for (File sourceFile : sources) {
             object.source(getProject().getProjectDir(), command, sourceFile);
@@ -72,7 +77,7 @@ public class GenerateCompileCommandsFileTask extends JsonGeneratorTask<CompileCo
         return new CompileCommandsFile();
     }
 
-    @Internal
+    @OutputFile
     public RegularFileProperty getCompileCommandsFileLocation() {
         return compileCommandsLocation;
     }
@@ -97,7 +102,8 @@ public class GenerateCompileCommandsFileTask extends JsonGeneratorTask<CompileCo
         return sources;
     }
 
-    @InputFile
+    @InputFiles
+    @Optional
     public RegularFileProperty getOptionsFile() {
         return optionsFile;
     }
