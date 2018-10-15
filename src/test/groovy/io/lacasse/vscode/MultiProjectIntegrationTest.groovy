@@ -1,6 +1,9 @@
 package io.lacasse.vscode
 
+import io.lacasse.integtest.DefaultGradleMultiProject
 import io.lacasse.integtest.FunctionalTest
+import io.lacasse.integtest.GradleMultiProject
+import io.lacasse.integtest.GradleProject
 import io.lacasse.integtest.TestFile
 import io.lacasse.vscode.fixtures.VisualStudioCodeTaskNames
 import io.lacasse.vscode.fixtures.VisualStudioCodeWorkspaceFixture
@@ -9,23 +12,8 @@ import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class MultiProjectIntegrationTest extends Specification implements FunctionalTest, VisualStudioCodeTaskNames {
-    @Rule TemporaryFolder testProjectDir = new TemporaryFolder()
+    @Rule GradleMultiProject rootProject = new DefaultGradleMultiProject()
     
-    @Override
-    File getRootDir() {
-        return testProjectDir.root.canonicalFile
-    }
-
-    @Override
-    File createBuildFile() {
-        return testProjectDir.newFile("build.gradle")
-    }
-
-    @Override
-    File createSettingsFile() {
-        return testProjectDir.newFile("settings.gradle")
-    }
-
     def setup() {
         buildFile << """
             plugins {
@@ -56,7 +44,7 @@ class MultiProjectIntegrationTest extends Specification implements FunctionalTes
 
         def workspace = vscodeWorkspace()
         workspace.location.assertIsFile()
-        workspace.content.folders*.path as Set == [rootDir, file("project1"), file("project2"), file("project3")]*.absolutePath as Set
+        workspace.content.folders*.path as Set == [rootProject.projectDir, file("project1"), file("project2"), file("project3")]*.absolutePath as Set
     }
 
     VisualStudioCodeWorkspaceFixture vscodeWorkspace(TestFile workspaceFile = file("root.code-workspace")) {

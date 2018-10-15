@@ -1,31 +1,17 @@
 package io.lacasse.vscode
 
+import io.lacasse.integtest.DefaultGradleMultiProject
 import io.lacasse.integtest.FunctionalTest
+import io.lacasse.integtest.GradleMultiProject
 import io.lacasse.integtest.TestFile
 import io.lacasse.vscode.fixtures.VisualStudioCodeProjectFixture
 import io.lacasse.vscode.fixtures.VisualStudioCodeTaskNames
 import io.lacasse.vscode.fixtures.VisualStudioCodeWorkspaceFixture
 import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class SingleEmptyProjectIntegrationTest extends Specification implements FunctionalTest, VisualStudioCodeTaskNames {
-    @Rule TemporaryFolder testProjectDir = new TemporaryFolder()
-
-    @Override
-    File getRootDir() {
-        return testProjectDir.root.getCanonicalFile()
-    }
-
-    @Override
-    File createBuildFile() {
-        return testProjectDir.newFile("build.gradle")
-    }
-
-    @Override
-    File createSettingsFile() {
-        return testProjectDir.newFile("settings.gradle")
-    }
+    @Rule GradleMultiProject rootProject = new DefaultGradleMultiProject()
 
     def setup() {
         buildFile << """
@@ -62,7 +48,7 @@ class SingleEmptyProjectIntegrationTest extends Specification implements Functio
 
         def workspace = vscodeWorkspace()
         workspace.location.assertIsFile()
-        workspace.content.folders*.path == [rootDir.absolutePath]
+        workspace.content.folders*.path == [rootProject.projectDir.absolutePath]
     }
 
     VisualStudioCodeProjectFixture vscodeProject(TestFile projectDir = file(".vscode")) {

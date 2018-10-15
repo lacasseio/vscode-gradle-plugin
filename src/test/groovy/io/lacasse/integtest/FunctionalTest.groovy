@@ -7,28 +7,17 @@ import org.gradle.testkit.runner.TaskOutcome
 trait FunctionalTest {
     private BuildResult lastResult
     GradleRunner newRunner() {
-        return GradleRunner.create().withProjectDir(getRootDir()).withPluginClasspath()
+        return GradleRunner.create().withProjectDir(getRootProject().getProjectDir()).withPluginClasspath().withDebug(true)
     }
 
-    abstract File getRootDir()
+    abstract GradleProject getRootProject()
 
-    TestFile getBuildFile() {
-        File result = new File(getRootDir(), "build.gradle")
-        if (!result.exists()) {
-            result = createBuildFile()
-        }
-        return new TestFile(result)
+    File getBuildFile() {
+        return rootProject.buildFile
     }
-    TestFile getSettingsFile() {
-        File result = new File(getRootDir(), "settings.gradle")
-        if (!result.exists()) {
-            result = createSettingsFile()
-        }
-        return new TestFile(result)
+    File getSettingsFile() {
+        return rootProject.settingsFile
     }
-
-    abstract File createBuildFile()
-    abstract File createSettingsFile()
 
     BuildResult succeed(String... tasks) {
         lastResult = newRunner().withArguments(tasks).build()
@@ -67,7 +56,7 @@ trait FunctionalTest {
     }
 
     TestFile file(String path) {
-        new TestFile(new File(rootDir, path))
+        new TestFile(new File(rootProject.projectDir, path))
     }
 
     void assertTaskExecuted(String task) {
