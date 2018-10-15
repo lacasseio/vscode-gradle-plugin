@@ -138,7 +138,6 @@ public class DefaultVisualStudioCodeCppConfiguration implements VisualStudioCode
             ProviderFactory providerFactory = it.getProject().getProviders();
             ProjectLayout projectLayout = it.getProject().getLayout();
 
-            it.setGroup("C++ Support");
             it.setDescription("Generate compile_commands.json for '" + binary + "'");
             it.dependsOn(binary.getCompileTask());
             it.getCompiler().set(providerFactory.provider(() -> {
