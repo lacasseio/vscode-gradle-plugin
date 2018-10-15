@@ -114,15 +114,11 @@ public class DefaultVisualStudioCodeCppConfiguration implements VisualStudioCode
 
         getCompileCommandsLocation()
                 .set(providerFactory
-                        .provider(() -> {
-                            System.out.println("1st");
-                            return projectLayout.getProjectDirectory().file("dummy");
-                        })
+                        .provider(() -> projectLayout.getProjectDirectory().file("dummy"))
                         .flatMap(new Transformer<Provider<? extends RegularFile>, RegularFile>() {
                             private boolean alreadyCalled = false;
                             @Override
                             public Provider<? extends RegularFile> transform(RegularFile regularFile) {
-                                System.out.println("bob");
                                 TaskContainer tasks = compileTask.get().getProject().getTasks();
                                 if (!alreadyCalled) {
                                     alreadyCalled = true;
