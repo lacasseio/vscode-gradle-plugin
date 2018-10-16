@@ -9,8 +9,8 @@
 settings.gradle
 ```
 sourceControl {
-    gitRepository("https://github.com/gradle/native-samples-cpp-library.git") {
-        producesModule("org.gradle.cpp-samples:utilities")
+    gitRepository("https://github.com/lacasseio/vscode-gradle-plugin.git") {
+        producesModule("io.lacasse.vscode:vscode-gradle-plugin")
     }
 }
 ```
