@@ -1,0 +1,13 @@
+plugins {
+    id "io.lacasse.vscode"
+}
+
+project(":cpp") {
+    apply plugin: "cpp-application"
+}
+
+project(":cpp").application.binaries.whenElementKnown { binary ->
+    visualStudioCode.project {
+        cppConfiguration(binary.name) { configureFromBinary(binary) }
+    }
+}

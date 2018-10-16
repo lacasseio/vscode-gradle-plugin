@@ -7,36 +7,17 @@ import io.lacasse.integtest.TestFile
 import io.lacasse.vscode.fixtures.VisualStudioCodeProjectFixture
 import io.lacasse.vscode.fixtures.VisualStudioCodeTaskNames
 import io.lacasse.vscode.fixtures.VisualStudioCodeWorkspaceFixture
+import org.gradle.samples.test.rule.Sample
+import org.gradle.samples.test.rule.UsesSample
 import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class SingleCppLibraryWithSharedLinkageProjectIntergrationTest extends Specification implements FunctionalTest, VisualStudioCodeTaskNames {
-    @Rule GradleMultiProject rootProject = new DefaultGradleMultiProject()
+    @Rule Sample sample = Sample.from("src/test/samples").intoTemporaryFolder()
+    @Rule GradleMultiProject rootProject = new DefaultGradleMultiProject(sample)
 
-    def setup() {
-        buildFile << """
-            plugins {
-                id "io.lacasse.vscode"
-                id "cpp-library"
-            }
-            
-            library.linkage = [Linkage.SHARED]
-        """
-
-        rootProject.file("src/main/public/common.h") << """
-            #define EXIT_CODE 0
-            
-            int get_foo();
-        """
-        rootProject.file("src/main/cpp/main.cpp") << """
-            #include "common.h"
-
-            int get_foo() {
-                return EXIT_CODE;
-            }
-        """
-    }
-
+    @UsesSample("cpp-library-with-shared-linkage")
     def "can create vscode IDE files for C++ shared library"() {
         expect:
         succeed "vscode"

@@ -1,0 +1,8 @@
+plugins {
+    id "io.lacasse.vscode"
+    id "cpp-library"
+}
+
+library {
+    linkage = [Linkage.SHARED]
+}

@@ -7,34 +7,18 @@ import io.lacasse.integtest.GradleProject
 import io.lacasse.integtest.TestFile
 import io.lacasse.vscode.fixtures.VisualStudioCodeTaskNames
 import io.lacasse.vscode.fixtures.VisualStudioCodeWorkspaceFixture
+import org.gradle.samples.test.rule.Sample
+import org.gradle.samples.test.rule.UsesSample
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class MultiProjectIntegrationTest extends Specification implements FunctionalTest, VisualStudioCodeTaskNames {
-    @Rule GradleMultiProject rootProject = new DefaultGradleMultiProject()
-    
-    def setup() {
-        buildFile << """
-            plugins {
-                id "io.lacasse.vscode"
-            }
-        """
-        settingsFile << """
-            rootProject.name = "root"
-        """
-    }
+    @Rule Sample sample = Sample.from("src/test/samples").intoTemporaryFolder()
+    @Rule GradleMultiProject rootProject = new DefaultGradleMultiProject(sample)
 
+    @UsesSample("multi-empty-project")
     def "can generate vscode project and workspace for multiple projects"() {
-        settingsFile << """
-            include "project1", "project2", "project3"
-        """
-        buildFile << """
-            allprojects {
-                apply plugin: "io.lacasse.vscode"
-            }
-        """
-        
         when:
         succeed "vscode"
         

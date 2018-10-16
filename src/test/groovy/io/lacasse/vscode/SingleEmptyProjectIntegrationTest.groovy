@@ -7,23 +7,16 @@ import io.lacasse.integtest.TestFile
 import io.lacasse.vscode.fixtures.VisualStudioCodeProjectFixture
 import io.lacasse.vscode.fixtures.VisualStudioCodeTaskNames
 import io.lacasse.vscode.fixtures.VisualStudioCodeWorkspaceFixture
+import org.gradle.samples.test.rule.Sample
+import org.gradle.samples.test.rule.UsesSample
 import org.junit.Rule
 import spock.lang.Specification
 
 class SingleEmptyProjectIntegrationTest extends Specification implements FunctionalTest, VisualStudioCodeTaskNames {
-    @Rule GradleMultiProject rootProject = new DefaultGradleMultiProject()
+    @Rule Sample sample = Sample.from("src/test/samples").intoTemporaryFolder()
+    @Rule GradleMultiProject rootProject = new DefaultGradleMultiProject(sample)
 
-    def setup() {
-        buildFile << """
-            plugins {
-                id "io.lacasse.vscode"
-            }
-        """
-        settingsFile << """
-            rootProject.name = "root"
-        """
-    }
-
+    @UsesSample("empty-project")
     def "can generate vscode project and workspace for empty project"() {
         when:
         succeed"vscode"
