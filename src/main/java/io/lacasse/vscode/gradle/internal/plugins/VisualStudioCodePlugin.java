@@ -32,9 +32,12 @@ import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.Delete;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
-import org.gradle.language.cpp.CppApplication;
+import org.gradle.language.cpp.CppBinary;
 import org.gradle.language.cpp.CppComponent;
 import org.gradle.language.cpp.CppExecutable;
+import org.gradle.language.cpp.CppLibrary;
+import org.gradle.language.cpp.CppSharedLibrary;
+import org.gradle.language.cpp.CppStaticLibrary;
 import org.gradle.plugins.ide.internal.IdeArtifactRegistry;
 import org.gradle.plugins.ide.internal.IdePlugin;
 import org.gradle.plugins.ide.internal.IdeProjectMetadata;
@@ -133,23 +136,37 @@ public class VisualStudioCodePlugin extends IdePlugin {
     private void configureNativePlugin(VisualStudioCodeExtension visualStudioCode) {
         project.getPluginManager().withPlugin("cpp-application", appliedPlugin -> configureNativeComponent(visualStudioCode, (CppComponent) project.getExtensions().getByName("application"), project.getTasks()));
 
-//        project.getPluginManager().withPlugin("cpp-library", appliedPlugin -> configureNativeComponent(visualStudioCode, (CppComponent) project.getExtensions().getByName("library"), project.getTasks()));
+        project.getPluginManager().withPlugin("cpp-library", appliedPlugin -> configureNativeComponent(visualStudioCode, (CppComponent) project.getExtensions().getByName("library"), project.getTasks()));
     }
-//
+
     private void configureNativeComponent(VisualStudioCodeExtension visualStudioCode, CppComponent component, TaskContainer task) {
+        boolean hasStaticAndSharedLinkage = false;
+
         component.getBinaries().whenElementKnown(binary -> {
-//            if (binary instanceof CppSharedLibrary) {
-//                visualStudioCode.getProject().task("Build " + binary.getName(), task.named(((CppSharedLibrary) binary).getLinkTask().get().getName()));
-//            } else if (binary instanceof CppStaticLibrary) {
-//                visualStudioCode.getProject().task("Build " + binary.getName(), task.named(((CppStaticLibrary) binary).getCreateTask().get().getName()));
-//            } else if (binary instanceof CppExecutable) {
-                visualStudioCode.getProject().cppConfiguration(binary.getName(), (it) -> it.configureFromBinary(binary));
+            visualStudioCode.getProject().cppConfiguration(binary.getName(), (it) -> it.configureFromBinary(binary));
+            if (binary instanceof CppSharedLibrary) {
+                visualStudioCode.getProject().buildTask("Build " + binary.getName(), ((CppSharedLibrary) binary).getLinkTask(), isDefaultBuildTask((CppLibrary) component, binary));
+            } else if (binary instanceof CppStaticLibrary) {
+                visualStudioCode.getProject().buildTask("Build " + binary.getName(), ((CppStaticLibrary) binary).getCreateTask(), isDefaultBuildTask((CppLibrary) component, binary));
+            } else if (binary instanceof CppExecutable) {
                 // TODO: Implementation knowledge on what is the development binary
-                visualStudioCode.getProject().buildTask("Build " + binary.getName(), task.named(((CppExecutable) binary).getLinkTask().get().getName()), !binary.isOptimized());
-//            } else {
-//                throw new IllegalArgumentException();
-//            }
+                visualStudioCode.getProject().buildTask("Build " + binary.getName(), ((CppExecutable) binary).getLinkTask(), !binary.isOptimized());
+            } else {
+                throw new IllegalArgumentException();
+            }
         });
+    }
+
+    private boolean isDefaultBuildTask(CppLibrary library, CppBinary binary) {
+        if (library.getLinkage().get().size() == 2) {
+            if (binary instanceof CppSharedLibrary && !binary.isOptimized()) {
+                return true;
+            }
+            return false;
+        }
+
+        // TODO: Implementation knowledge on what is the development binary
+        return !binary.isOptimized();
     }
 
     private static TaskProvider<GenerateWorkspaceFileTask> createWorkspaceFileTask(TaskContainer tasks, IdeArtifactRegistry artifactRegistry, DefaultVisualStudioCodeRootExtension visualStudioCode) {
