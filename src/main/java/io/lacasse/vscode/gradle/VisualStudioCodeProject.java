@@ -40,7 +40,7 @@ public interface VisualStudioCodeProject {
      * @param task the Gradle task to reference
      * @return a Gradle task alias for Visual Studio Code
      */
-    VisualStudioCodeGradleTask task(String displayName, TaskProvider<? extends Task> task);
+    VisualStudioCodeGradleTask task(String displayName, Provider<? extends Task> task);
 
     /**
      * Creates a test task reference to be used in Visual Studio Code. The task can optionally be mark as the default test task.
@@ -49,8 +49,8 @@ public interface VisualStudioCodeProject {
      * @param task the Gradle task to reference
      * @return a Gradle task alias for Visual Studio Code
      */
-    VisualStudioCodeGradleTask testTask(String displayName, TaskProvider<? extends Task> task);
-    VisualStudioCodeGradleTask testTask(String displayName, TaskProvider<? extends Task> task, boolean isDefault);
+    VisualStudioCodeGradleTask testTask(String displayName, Provider<? extends Task> task);
+    VisualStudioCodeGradleTask testTask(String displayName, Provider<? extends Task> task, boolean isDefault);
 
     /**
      * Creates a build task reference to be used in Visual Studio Code. The task can optionally be mark as the default build task.
@@ -59,8 +59,8 @@ public interface VisualStudioCodeProject {
      * @param task the Gradle task to reference
      * @return a Gradle task alias for Visual Studio Code
      */
-    VisualStudioCodeGradleTask buildTask(String displayName, TaskProvider<? extends Task> task);
-    VisualStudioCodeGradleTask buildTask(String displayName, TaskProvider<? extends Task> task, boolean isDefault);
+    VisualStudioCodeGradleTask buildTask(String displayName, Provider<? extends Task> task);
+    VisualStudioCodeGradleTask buildTask(String displayName, Provider<? extends Task> task, boolean isDefault);
 
     /**
      * Creates a background task reference to be used in Visual Studio Code.
@@ -69,7 +69,7 @@ public interface VisualStudioCodeProject {
      * @param task the Gradle task to reference
      * @return a Gradle task alias for Visual Studio Code
      */
-    VisualStudioCodeGradleTask backgroundTask(String displayName, TaskProvider<? extends Task> task);
+    VisualStudioCodeGradleTask backgroundTask(String displayName, Provider<? extends Task> task);
 
     /**
      * Creates a C++ configuration for Visual Studio Code intellisense.

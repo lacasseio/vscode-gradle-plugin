@@ -17,6 +17,7 @@
 package io.lacasse.vscode.gradle;
 
 import org.gradle.api.Task;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskProvider;
 
 /**
@@ -30,5 +31,5 @@ public interface VisualStudioCodeGradleTask {
      */
     String getDisplayName();
 
-    TaskProvider<? extends Task> getTask();
+    Provider<? extends Task> getTask();
 }

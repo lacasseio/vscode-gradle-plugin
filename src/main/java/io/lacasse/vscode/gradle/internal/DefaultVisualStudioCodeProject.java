@@ -73,38 +73,38 @@ public class DefaultVisualStudioCodeProject implements VisualStudioCodeProject {
     }
 
     @Override
-    public VisualStudioCodeGradleTask task(String name, TaskProvider<? extends Task> task) {
+    public VisualStudioCodeGradleTask task(String name, Provider<? extends Task> task) {
         DefaultVisualStudioCodeGradleTask result = new DefaultVisualStudioCodeGradleTask(name, task, false, false, false, false, null);
         gradleTasks.add(result);
         return result;
     }
 
     @Override
-    public VisualStudioCodeGradleTask testTask(String name, TaskProvider<? extends Task> task) {
+    public VisualStudioCodeGradleTask testTask(String name, Provider<? extends Task> task) {
         return testTask(name, task, false);
     }
 
     @Override
-    public VisualStudioCodeGradleTask testTask(String name, TaskProvider<? extends Task> task, boolean isDefault) {
+    public VisualStudioCodeGradleTask testTask(String name, Provider<? extends Task> task, boolean isDefault) {
         DefaultVisualStudioCodeGradleTask result = new DefaultVisualStudioCodeGradleTask(name, task, false, true, isDefault, false, null);
         gradleTasks.add(result);
         return result;
     }
 
     @Override
-    public VisualStudioCodeGradleTask buildTask(String name, TaskProvider<? extends Task> task) {
+    public VisualStudioCodeGradleTask buildTask(String name, Provider<? extends Task> task) {
         return buildTask(name, task, false);
     }
 
     @Override
-    public VisualStudioCodeGradleTask buildTask(String name, TaskProvider<? extends Task> task, boolean isDefault) {
+    public VisualStudioCodeGradleTask buildTask(String name, Provider<? extends Task> task, boolean isDefault) {
         DefaultVisualStudioCodeGradleTask result = new DefaultVisualStudioCodeGradleTask(name, task, true, false, isDefault, false, "$gcc");
         gradleTasks.add(result);
         return result;
     }
 
     @Override
-    public VisualStudioCodeGradleTask backgroundTask(String name, TaskProvider<? extends Task> task) {
+    public VisualStudioCodeGradleTask backgroundTask(String name, Provider<? extends Task> task) {
         DefaultVisualStudioCodeGradleTask result = new DefaultVisualStudioCodeGradleTask(name, task, false, false, false, true, null);
         gradleTasks.add(result);
         return result;

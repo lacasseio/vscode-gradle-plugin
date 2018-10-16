@@ -17,6 +17,8 @@
 package io.lacasse.vscode.gradle.internal;
 
 import io.lacasse.vscode.gradle.VisualStudioCodeGradleTask;
+import org.gradle.api.Task;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
@@ -24,14 +26,14 @@ import org.gradle.api.tasks.TaskProvider;
 
 public class DefaultVisualStudioCodeGradleTask implements VisualStudioCodeGradleTask {
     private final String name;
-    private final TaskProvider<?> task;
+    private final Provider<? extends Task> task;
     private final boolean build;
     private final boolean test;
     private final boolean isDefault;
     private final boolean isBackground;
     private final String problemMatcher;
 
-    public DefaultVisualStudioCodeGradleTask(String name, TaskProvider<?> task, boolean build, boolean test, boolean isDefault, boolean isBackground, String problemMatcher) {
+    public DefaultVisualStudioCodeGradleTask(String name, Provider<? extends Task> task, boolean build, boolean test, boolean isDefault, boolean isBackground, String problemMatcher) {
         this.name = name;
         this.task = task;
         this.build = build;
@@ -79,7 +81,7 @@ public class DefaultVisualStudioCodeGradleTask implements VisualStudioCodeGradle
 
     @Internal
     @Override
-    public TaskProvider<?> getTask() {
+    public Provider<? extends Task> getTask() {
         return task;
     }
 }
