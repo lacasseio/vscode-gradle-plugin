@@ -3,14 +3,12 @@ package io.lacasse.vscode
 import io.lacasse.integtest.DefaultGradleMultiProject
 import io.lacasse.integtest.FunctionalTest
 import io.lacasse.integtest.GradleMultiProject
-import io.lacasse.integtest.GradleProject
 import io.lacasse.integtest.TestFile
 import io.lacasse.vscode.fixtures.VisualStudioCodeTaskNames
 import io.lacasse.vscode.fixtures.VisualStudioCodeWorkspaceFixture
 import org.gradle.samples.test.rule.Sample
 import org.gradle.samples.test.rule.UsesSample
 import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class MultiProjectIntegrationTest extends Specification implements FunctionalTest, VisualStudioCodeTaskNames {
@@ -20,7 +18,7 @@ class MultiProjectIntegrationTest extends Specification implements FunctionalTes
     @UsesSample("multi-empty-project")
     def "can generate vscode project and workspace for multiple projects"() {
         when:
-        succeed "vscode"
+        succeeds "vscode"
         
         then:
         assertTasksExecuted([vscodeTasks(), vscodeTasks(":project1"), vscodeTasks(":project2"), vscodeTasks(":project3")].flatten())

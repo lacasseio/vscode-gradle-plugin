@@ -17,7 +17,7 @@ class CustomConfigurationUsingCppBinaryTaskIntegrationTest extends Specification
     @UsesSample("custom-configuration")
     def "can configure vscode using CppBinary task"() {
         expect:
-        succeed "vscode"
+        succeeds "vscode"
 
         assertTasksExecuted([vscodeTasks(), ":cpp:generateMainDebugCompileCommands", ":cpp:generateMainReleaseCompileCommands"].flatten())
         assertTasksNotSkipped([vscodeTasks(), ":cpp:generateMainDebugCompileCommands", ":cpp:generateMainReleaseCompileCommands"].flatten())

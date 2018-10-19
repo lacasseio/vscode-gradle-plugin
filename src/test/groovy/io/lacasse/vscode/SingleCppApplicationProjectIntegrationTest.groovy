@@ -10,7 +10,6 @@ import io.lacasse.vscode.fixtures.VisualStudioCodeWorkspaceFixture
 import org.gradle.samples.test.rule.Sample
 import org.gradle.samples.test.rule.UsesSample
 import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class SingleCppApplicationProjectIntegrationTest extends Specification implements FunctionalTest, VisualStudioCodeTaskNames {
@@ -20,7 +19,7 @@ class SingleCppApplicationProjectIntegrationTest extends Specification implement
     @UsesSample("cpp-application")
     def "can create vscode IDE files for C++ application"() {
         expect:
-        succeed "vscode"
+        succeeds "vscode"
 
         assertTasksExecuted(vscodeTasks())
         assertTasksNotSkipped(vscodeTasks())

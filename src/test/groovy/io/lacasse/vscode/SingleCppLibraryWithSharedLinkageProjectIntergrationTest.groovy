@@ -10,7 +10,6 @@ import io.lacasse.vscode.fixtures.VisualStudioCodeWorkspaceFixture
 import org.gradle.samples.test.rule.Sample
 import org.gradle.samples.test.rule.UsesSample
 import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class SingleCppLibraryWithSharedLinkageProjectIntergrationTest extends Specification implements FunctionalTest, VisualStudioCodeTaskNames {
@@ -20,7 +19,7 @@ class SingleCppLibraryWithSharedLinkageProjectIntergrationTest extends Specifica
     @UsesSample("cpp-library-with-shared-linkage")
     def "can create vscode IDE files for C++ shared library"() {
         expect:
-        succeed "vscode"
+        succeeds "vscode"
 
         assertTasksExecuted(vscodeTasks())
         assertTasksNotSkipped(vscodeTasks())

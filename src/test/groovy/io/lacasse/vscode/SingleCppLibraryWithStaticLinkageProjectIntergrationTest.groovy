@@ -10,7 +10,6 @@ import io.lacasse.vscode.fixtures.VisualStudioCodeWorkspaceFixture
 import org.gradle.samples.test.rule.Sample
 import org.gradle.samples.test.rule.UsesSample
 import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class SingleCppLibraryWithStaticLinkageProjectIntergrationTest extends Specification implements FunctionalTest, VisualStudioCodeTaskNames {
@@ -20,7 +19,7 @@ class SingleCppLibraryWithStaticLinkageProjectIntergrationTest extends Specifica
     @UsesSample("cpp-library-with-static-linkage")
     def "can create vscode IDE files for C++ static library"() {
         expect:
-        succeed "vscode"
+        succeeds "vscode"
 
         assertTasksExecuted(vscodeTasks())
         assertTasksNotSkipped(vscodeTasks())

@@ -19,7 +19,7 @@ class SingleEmptyProjectIntegrationTest extends Specification implements Functio
     @UsesSample("empty-project")
     def "can generate vscode project and workspace for empty project"() {
         when:
-        succeed"vscode"
+        succeeds"vscode"
 
         then:
         assertTasksExecuted vscodeTasks()

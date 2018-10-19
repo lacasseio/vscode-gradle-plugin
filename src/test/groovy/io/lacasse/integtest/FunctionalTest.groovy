@@ -19,7 +19,7 @@ trait FunctionalTest {
         return rootProject.settingsFile
     }
 
-    BuildResult succeed(String... tasks) {
+    BuildResult succeeds(String... tasks) {
         lastResult = newRunner().withArguments(tasks).build()
         println lastResult.output
         return lastResult
