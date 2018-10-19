@@ -6,8 +6,17 @@ import org.gradle.testkit.runner.TaskOutcome
 
 trait FunctionalTest {
     private BuildResult lastResult
+    private GradleRunner runner
+
     GradleRunner newRunner() {
         return GradleRunner.create().withProjectDir(getRootProject().getProjectDir()).withPluginClasspath().withDebug(true)
+    }
+
+    GradleRunner getRunner() {
+        if (runner == null) {
+            runner = newRunner()
+        }
+        return runner
     }
 
     abstract GradleProject getRootProject()
@@ -20,7 +29,15 @@ trait FunctionalTest {
     }
 
     BuildResult succeeds(String... tasks) {
-        lastResult = newRunner().withArguments(tasks).build()
+        lastResult = getRunner().withArguments(tasks).build()
+        runner = null
+        println lastResult.output
+        return lastResult
+    }
+
+    BuildResult fails(String... tasks) {
+        lastResult = getRunner().withArguments(tasks).buildAndFail()
+        runner = null
         println lastResult.output
         return lastResult
     }
