@@ -38,7 +38,7 @@ gradlePlugin {
 }
 
 pluginBundle {
-    website = "https://github.com/lacasseio/vscode-gradle-plugin"
+    website = "https://vscode.lacasse.io/"
     vcsUrl = "https://github.com/lacasseio/vscode-gradle-plugin"
     description = "Gradle plugin for generating Visual Studio Code IDE files."
     tags = listOf("visual-studio-code", "vscode", "ide")
