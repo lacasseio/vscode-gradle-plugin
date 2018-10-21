@@ -78,6 +78,10 @@ class SingleCppApplicationProjectIntegrationTest extends Specification implement
         project.tasksFile.content.tasks[0].group.isDefault == true
     }
 
+    // TODO: Add coverage for multiple build type (with and without `debug`)
+    // TODO: Add coverage for multiple platform (the one targetting the current host are eligible for being the default)
+    // TODO: Add coverage for multiple flavor (may defer this one)
+
     VisualStudioCodeProjectFixture vscodeProject(TestFile projectDir = file(".vscode")) {
         new VisualStudioCodeProjectFixture(projectDir)
     }
