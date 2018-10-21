@@ -135,12 +135,12 @@ public class VisualStudioCodePluginImpl extends IdePlugin {
     }
 
     private void configureNativePlugin(VisualStudioCodeExtension visualStudioCode) {
-        project.getPluginManager().withPlugin("cpp-application", appliedPlugin -> configureNativeComponent(visualStudioCode, (CppComponent) project.getExtensions().getByName("application"), project.getTasks()));
+        project.getPluginManager().withPlugin("cpp-application", appliedPlugin -> configureNativeComponent(visualStudioCode, (CppComponent) project.getExtensions().getByName("application")));
 
-        project.getPluginManager().withPlugin("cpp-library", appliedPlugin -> configureNativeComponent(visualStudioCode, (CppComponent) project.getExtensions().getByName("library"), project.getTasks()));
+        project.getPluginManager().withPlugin("cpp-library", appliedPlugin -> configureNativeComponent(visualStudioCode, (CppComponent) project.getExtensions().getByName("library")));
     }
 
-    private void configureNativeComponent(VisualStudioCodeExtension visualStudioCode, CppComponent component, TaskContainer task) {
+    private void configureNativeComponent(VisualStudioCodeExtension visualStudioCode, CppComponent component) {
         boolean hasStaticAndSharedLinkage = false;
 
         component.getBinaries().whenElementKnown(binary -> {

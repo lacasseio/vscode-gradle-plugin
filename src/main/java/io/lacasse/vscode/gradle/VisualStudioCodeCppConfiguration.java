@@ -22,6 +22,7 @@ import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Provider;
 import org.gradle.language.cpp.CppBinary;
+import org.gradle.nativeplatform.NativeBinarySpec;
 
 /**
  * A C++ configuration used for intellisense by the {@code ms-vscode.cpptools} Visual Studio Code extension.
@@ -53,4 +54,9 @@ public interface VisualStudioCodeCppConfiguration {
      * Configure C++ configuration from a {@code CppBinary}.
      */
     void configureFromBinary(CppBinary binary);
+
+    /**
+     * Configure C++ configuration from a {@code NativeBinarySpec} (software model).
+     */
+    void configureFromBinary(NativeBinarySpec binary);
 }

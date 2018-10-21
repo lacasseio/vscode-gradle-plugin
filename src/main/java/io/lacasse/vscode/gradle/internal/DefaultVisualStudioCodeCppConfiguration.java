@@ -18,6 +18,8 @@ package io.lacasse.vscode.gradle.internal;
 
 import io.lacasse.vscode.gradle.VisualStudioCodeCppConfiguration;
 import io.lacasse.vscode.gradle.internal.tasks.GenerateCompileCommandsFileTask;
+import org.gradle.api.DomainObjectSet;
+import org.gradle.api.Task;
 import org.gradle.api.Transformer;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
@@ -32,8 +34,10 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskContainer;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.cpp.CppBinary;
 import org.gradle.language.cpp.tasks.CppCompile;
+import org.gradle.nativeplatform.NativeBinarySpec;
 import org.gradle.nativeplatform.platform.internal.NativePlatformInternal;
 import org.gradle.nativeplatform.toolchain.internal.NativeToolChainInternal;
 import org.gradle.nativeplatform.toolchain.internal.ToolType;
@@ -44,6 +48,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DefaultVisualStudioCodeCppConfiguration implements VisualStudioCodeCppConfiguration {
     private final String name;
@@ -139,17 +145,96 @@ public class DefaultVisualStudioCodeCppConfiguration implements VisualStudioCode
             it.getCompiler().set(providerFactory.provider(() -> {
                 CppCompile compileTask = binary.getCompileTask().get();
                 RegularFileProperty f = projectLayout.fileProperty();
-                f.set(((NativeToolChainInternal)compileTask.getToolChain().get()).select((NativePlatformInternal) compileTask.getTargetPlatform().get()).locateTool(ToolType.CPP_COMPILER).getTool());
+                f.set(((NativeToolChainInternal) compileTask.getToolChain().get()).select((NativePlatformInternal) compileTask.getTargetPlatform().get()).locateTool(ToolType.CPP_COMPILER).getTool());
+                return f.get();
+            }));
+            it.compileCommands(configuration -> {
+                configuration.getOptionsFile().set(providerFactory.provider(() -> {
+                    CppCompile compileTask = binary.getCompileTask().get();
+                    RegularFileProperty f = projectLayout.fileProperty();
+                    f.set(new File(compileTask.getTemporaryDir(), "options.txt"));
+                    return f.get();
+                }));
+                configuration.getSources().from(binary.getCompileTask().map((Transformer<FileCollection, CppCompile>) cppCompile -> cppCompile.getSource()));
+            });
+            it.setOutputFile(projectLayout.getBuildDirectory().file("cpp-support/" + binary.getName() + "/compile_commands.json").get().getAsFile());
+        }).flatMap(it -> it.getCompileCommandsFileLocation());
+    }
+
+    @Override
+    public void configureFromBinary(NativeBinarySpec binary) {
+        DomainObjectSet<? extends CppCompile> compileTasks = binary.getTasks().withType(CppCompile.class);
+
+        getIncludes().from(providerFactory.provider(() -> compileTasks.stream().map((Function<CppCompile, FileCollection>) cppCompile -> cppCompile.getIncludes().plus(cppCompile.getSystemIncludes())).collect(Collectors.toList())));
+        getDefines().set(providerFactory.provider(() -> {
+            return compileTasks.stream().flatMap(cppCompile -> {
+                Map<String, String> macros = new LinkedHashMap<>(cppCompile.getMacros());
+                for (String arg : cppCompile.getCompilerArgs().get()) {
+                    if (arg.startsWith("-D")) {
+                        // TODO: Good approximation
+                        macros.put(arg.substring(2), null);
+                    }
+                }
+
+                List<String> result = new ArrayList<>();
+                for (Map.Entry<String, String> e : macros.entrySet()) {
+                    String macro = e.getKey();
+                    if (e.getValue() != null) {
+                        macro += "=" + e.getValue();
+                    }
+                    result.add(macro);
+                }
+                return result.stream();
+            }).collect(Collectors.toList());
+        }));
+
+        getCompileCommandsLocation()
+                .set(providerFactory
+                        .provider(() -> projectLayout.getProjectDirectory().file("dummy"))
+                        .flatMap(new Transformer<Provider<? extends RegularFile>, RegularFile>() {
+                            private boolean alreadyCalled = false;
+                            @Override
+                            public Provider<? extends RegularFile> transform(RegularFile regularFile) {
+                                TaskContainer tasks = compileTasks.iterator().next().getProject().getTasks();
+                                if (!alreadyCalled) {
+                                    alreadyCalled = true;
+                                    return generateCompileCommandsFileFor(tasks, binary);
+                                }
+                                return tasks.named(GenerateCompileCommandsFileTask.taskName(binary), GenerateCompileCommandsFileTask.class).get().getCompileCommandsFileLocation();
+                            }
+                        }));
+    }
+
+    private static Provider<RegularFile> generateCompileCommandsFileFor(TaskContainer tasks, NativeBinarySpec binary) {
+        return tasks.register(GenerateCompileCommandsFileTask.taskName(binary), GenerateCompileCommandsFileTask.class, it -> {
+            ProviderFactory providerFactory = it.getProject().getProviders();
+            ProjectLayout projectLayout = it.getProject().getLayout();
+            ObjectFactory objectFactory = it.getProject().getObjects();
+
+            it.setDescription("Generate compile_commands.json for '" + binary + "'");
+            it.dependsOn(binary.getTasks().withType(CppCompile.class));
+            it.getCompiler().set(providerFactory.provider(() -> {
+                RegularFileProperty f = projectLayout.fileProperty();
+                f.set(((NativeToolChainInternal) binary.getToolChain()).select((NativePlatformInternal) binary.getTargetPlatform()).locateTool(ToolType.CPP_COMPILER).getTool());
                 return f.get();
             }));
 
-            it.getOptionsFile().set(providerFactory.provider(() -> {
-                CppCompile compileTask = binary.getCompileTask().get();
-                RegularFileProperty f = projectLayout.fileProperty();
-                f.set(new File(compileTask.getTemporaryDir(), "options.txt"));
-                return f.get();
+            // TODO: Add coverage for multiple source set where includes and sources are aggregated
+            // TODO: Add coverage for source set with different compiler args
+            it.getCompileCommands().set(providerFactory.provider(() -> {
+                return binary.getTasks().withType(CppCompile.class).stream().map((CppCompile compileTask) -> {
+                    GenerateCompileCommandsFileTask.CompileCommandsConfiguration configuration = objectFactory.newInstance(GenerateCompileCommandsFileTask.CompileCommandsConfiguration.class);
+                    configuration.getOptionsFile().set(providerFactory.provider(() -> {
+                        RegularFileProperty f = projectLayout.fileProperty();
+                        f.set(new File(compileTask.getTemporaryDir(), "options.txt"));
+                        return f.get();
+                    }));
+                    configuration.getSources().from(binary.getTasks().withType(CppCompile.class).stream().map(cppCompile -> cppCompile.getSource()).collect(Collectors.toList()));
+
+                    return configuration;
+                }).collect(Collectors.toList());
             }));
-            it.getSources().from(binary.getCompileTask().map((Transformer<FileCollection, CppCompile>) cppCompile -> cppCompile.getSource()));
+
             it.setOutputFile(projectLayout.getBuildDirectory().file("cpp-support/" + binary.getName() + "/compile_commands.json").get().getAsFile());
         }).flatMap(it -> it.getCompileCommandsFileLocation());
     }

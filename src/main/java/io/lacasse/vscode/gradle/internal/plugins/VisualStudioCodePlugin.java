@@ -1,7 +1,9 @@
 package io.lacasse.vscode.gradle.internal.plugins;
 
+import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.AppliedPlugin;
 import org.gradle.util.GradleVersion;
 
 public class VisualStudioCodePlugin implements Plugin<Project> {
@@ -10,6 +12,9 @@ public class VisualStudioCodePlugin implements Plugin<Project> {
         assertCompatibleGradleVersion();
 
         project.getPluginManager().apply(VisualStudioCodePluginImpl.class);
+        project.getPluginManager().withPlugin("cpp", appliedPlugin -> {
+            project.getPluginManager().apply(VisualStudioCodeRules.class);
+        });
     }
 
     private void assertCompatibleGradleVersion() {

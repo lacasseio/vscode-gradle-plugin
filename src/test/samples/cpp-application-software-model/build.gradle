@@ -1,0 +1,10 @@
+plugins {
+    id "io.lacasse.vscode"
+    id "cpp"
+}
+
+model {
+    components {
+        main(NativeExecutableSpec)
+    }
+}

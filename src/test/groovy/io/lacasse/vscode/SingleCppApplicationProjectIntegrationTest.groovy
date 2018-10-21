@@ -51,6 +51,33 @@ class SingleCppApplicationProjectIntegrationTest extends Specification implement
         project.tasksFile.content.tasks[1].group == "build"
     }
 
+    @UsesSample("cpp-application-software-model")
+    def "can create vscode IDE files for C++ application from the software model"() {
+        expect:
+        succeeds "vscode"
+
+        assertTasksExecuted(vscodeTasks())
+        assertTasksNotSkipped(vscodeTasks())
+
+        def project = vscodeProject()
+        project.cppPropertiesFile.location.assertIsFile()
+        project.cppPropertiesFile.content.configurations.size() == 1
+        project.cppPropertiesFile.content.configurations[0].name == "executable"
+        project.cppPropertiesFile.content.configurations[0].includePath.contains(rootProject.file("src/main/headers").absolutePath)
+        project.cppPropertiesFile.content.configurations[0].defines.empty
+        project.cppPropertiesFile.content.configurations[0].compileCommands == rootProject.file("build/cpp-support/executable/compile_commands.json").absolutePath
+
+        // TODO: support debugging
+        project.launchFile.location.assertIsFile()
+        project.launchFile.content.configurations.empty
+
+        project.tasksFile.location.assertIsFile()
+        project.tasksFile.content.tasks.size() == 1
+        project.tasksFile.content.tasks[0].label == "Build executable"
+        project.tasksFile.content.tasks[0].group.kind == "build"
+        project.tasksFile.content.tasks[0].group.isDefault == true
+    }
+
     VisualStudioCodeProjectFixture vscodeProject(TestFile projectDir = file(".vscode")) {
         new VisualStudioCodeProjectFixture(projectDir)
     }

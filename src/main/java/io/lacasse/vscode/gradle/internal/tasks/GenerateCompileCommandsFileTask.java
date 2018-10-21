@@ -16,58 +16,68 @@
 
 package io.lacasse.vscode.gradle.internal.tasks;
 
+import io.lacasse.vscode.internal.schemas.CompileCommand;
+import org.gradle.api.Action;
 import org.gradle.api.Transformer;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.apache.commons.io.IOUtils;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.cpp.CppBinary;
 import org.gradle.language.cpp.tasks.CppCompile;
+import org.gradle.nativeplatform.NativeBinarySpec;
 import org.gradle.nativeplatform.platform.internal.NativePlatformInternal;
 import org.gradle.nativeplatform.toolchain.internal.NativeToolChainInternal;
 import org.gradle.nativeplatform.toolchain.internal.ToolType;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.text.WordUtils.capitalize;
 
 public class GenerateCompileCommandsFileTask extends JsonGeneratorTask<CompileCommandsFile> {
     private final RegularFileProperty compileCommandsLocation = getProject().getObjects().fileProperty();
-    private final ConfigurableFileCollection sources = getProject().files();
-    private final RegularFileProperty optionsFile = getProject().getObjects().fileProperty();
     private final RegularFileProperty compiler = getProject().getObjects().fileProperty();
+    private final ListProperty<CompileCommandsConfiguration> compileCommands = getProject().getObjects().listProperty(CompileCommandsConfiguration.class);
 
     @Override
     protected void configure(CompileCommandsFile object) {
-        String command = null;
-        if (optionsFile.isPresent() && optionsFile.getAsFile().get().exists()) {
-            String compilerFlags = getCompilerFlags();
-            String compilerPath = getCompiler().get().getAsFile().getAbsolutePath();
-            command = compilerPath + " " + compilerFlags;
-        }
+        for (CompileCommandsConfiguration configuration : compileCommands.get()) {
+            String command = null;
+            if (configuration.getOptionsFile().isPresent() && configuration.getOptionsFile().getAsFile().get().exists()) {
+                String compilerFlags = getCompilerFlags(configuration.getOptionsFile().get().getAsFile());
+                String compilerPath = getCompiler().get().getAsFile().getAbsolutePath();
+                command = compilerPath + " " + compilerFlags;
+            }
 
-        for (File sourceFile : sources) {
-            object.source(getProject().getProjectDir(), command, sourceFile);
+            for (File sourceFile : configuration.getSources()) {
+                object.source(getProject().getProjectDir(), command, sourceFile);
+            }
         }
     }
 
-    private String getCompilerFlags() {
-        try (InputStream inStream = new FileInputStream(optionsFile.getAsFile().get())) {
+    private String getCompilerFlags(File optionsFile) {
+        try (InputStream inStream = new FileInputStream(optionsFile)) {
             return IOUtils.readLines(inStream, Charset.defaultCharset()).stream().collect(Collectors.joining(" "));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -99,15 +109,15 @@ public class GenerateCompileCommandsFileTask extends JsonGeneratorTask<CompileCo
         return null;
     }
 
-    @InputFiles
-    public ConfigurableFileCollection getSources() {
-        return sources;
+    public void compileCommands(Action<CompileCommandsConfiguration> action) {
+        CompileCommandsConfiguration configuration = getProject().getObjects().newInstance(CompileCommandsConfiguration.class);
+        action.execute(configuration);
+        compileCommands.add(configuration);
     }
 
-    @InputFiles
-    @Optional
-    public RegularFileProperty getOptionsFile() {
-        return optionsFile;
+    @Nested
+    public ListProperty<CompileCommandsConfiguration> getCompileCommands() {
+        return compileCommands;
     }
 
     @InputFile
@@ -116,6 +126,36 @@ public class GenerateCompileCommandsFileTask extends JsonGeneratorTask<CompileCo
     }
 
     public static String taskName(CppBinary binary) {
-        return "generate" + capitalize(binary.getName()) + "CompileCommands";
+        return taskName(binary.getName());
+    }
+
+    public static String taskName(NativeBinarySpec binary) {
+        return taskName(binary.getName());
+    }
+
+    private static String taskName(String name) {
+        return "generate" + capitalize(name) + "CompileCommands";
+    }
+
+    public static class CompileCommandsConfiguration {
+        private final ConfigurableFileCollection sources;
+        private final RegularFileProperty optionsFile;
+
+        @Inject
+        public CompileCommandsConfiguration(ObjectFactory objectFactory, ProjectLayout projectLayout) {
+            this.sources = projectLayout.configurableFiles();
+            this.optionsFile = objectFactory.fileProperty();
+        }
+
+        @InputFiles
+        public ConfigurableFileCollection getSources() {
+            return sources;
+        }
+
+        @InputFiles
+        @Optional
+        public RegularFileProperty getOptionsFile() {
+            return optionsFile;
+        }
     }
 }
