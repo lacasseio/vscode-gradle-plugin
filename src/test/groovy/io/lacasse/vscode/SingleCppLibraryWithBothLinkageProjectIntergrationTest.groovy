@@ -29,20 +29,24 @@ class SingleCppLibraryWithBothLinkageProjectIntergrationTest extends Specificati
         project.cppPropertiesFile.content.configurations.size() == 4
         project.cppPropertiesFile.content.configurations[0].name == "mainDebugStatic"
         project.cppPropertiesFile.content.configurations[0].includePath.contains(rootProject.file("src/main/public").absolutePath)
+        project.cppPropertiesFile.content.configurations[0].includePath.contains(rootProject.file("src/main/headers").absolutePath)
         project.cppPropertiesFile.content.configurations[0].defines.empty
         project.cppPropertiesFile.content.configurations[0].compileCommands == rootProject.file("build/cpp-support/mainDebugStatic/compile_commands.json").absolutePath
 
         project.cppPropertiesFile.content.configurations[1].name == "mainDebugShared"
+        project.cppPropertiesFile.content.configurations[1].includePath.contains(rootProject.file("src/main/public").absolutePath)
         project.cppPropertiesFile.content.configurations[1].includePath.contains(rootProject.file("src/main/headers").absolutePath)
         project.cppPropertiesFile.content.configurations[1].defines.empty
         project.cppPropertiesFile.content.configurations[1].compileCommands == rootProject.file("build/cpp-support/mainDebugShared/compile_commands.json").absolutePath
 
         project.cppPropertiesFile.content.configurations[2].name == "mainReleaseStatic"
+        project.cppPropertiesFile.content.configurations[2].includePath.contains(rootProject.file("src/main/public").absolutePath)
         project.cppPropertiesFile.content.configurations[2].includePath.contains(rootProject.file("src/main/headers").absolutePath)
         project.cppPropertiesFile.content.configurations[2].defines.empty
         project.cppPropertiesFile.content.configurations[2].compileCommands == rootProject.file("build/cpp-support/mainReleaseStatic/compile_commands.json").absolutePath
 
         project.cppPropertiesFile.content.configurations[3].name == "mainReleaseShared"
+        project.cppPropertiesFile.content.configurations[3].includePath.contains(rootProject.file("src/main/public").absolutePath)
         project.cppPropertiesFile.content.configurations[3].includePath.contains(rootProject.file("src/main/headers").absolutePath)
         project.cppPropertiesFile.content.configurations[3].defines.empty
         project.cppPropertiesFile.content.configurations[3].compileCommands == rootProject.file("build/cpp-support/mainReleaseShared/compile_commands.json").absolutePath
@@ -65,6 +69,41 @@ class SingleCppLibraryWithBothLinkageProjectIntergrationTest extends Specificati
 
         project.tasksFile.content.tasks[3].label == "Build mainReleaseShared"
         project.tasksFile.content.tasks[3].group == "build"
+    }
+
+    @UsesSample("cpp-library-software-model")
+    def "can create vscode IDE files for C++ library from the software model"() {
+        expect:
+        succeeds "vscode"
+
+        assertTasksExecuted(vscodeTasks())
+        assertTasksNotSkipped(vscodeTasks())
+
+        def project = vscodeProject()
+        project.cppPropertiesFile.location.assertIsFile()
+        project.cppPropertiesFile.content.configurations.size() == 2
+        project.cppPropertiesFile.content.configurations[0].name == "sharedLibrary"
+        project.cppPropertiesFile.content.configurations[0].includePath.contains(rootProject.file("src/main/headers").absolutePath)
+        project.cppPropertiesFile.content.configurations[0].defines.empty
+        project.cppPropertiesFile.content.configurations[0].compileCommands == rootProject.file("build/cpp-support/sharedLibrary/compile_commands.json").absolutePath
+
+        project.cppPropertiesFile.content.configurations[1].name == "staticLibrary"
+        project.cppPropertiesFile.content.configurations[1].includePath.contains(rootProject.file("src/main/headers").absolutePath)
+        project.cppPropertiesFile.content.configurations[1].defines.empty
+        project.cppPropertiesFile.content.configurations[1].compileCommands == rootProject.file("build/cpp-support/staticLibrary/compile_commands.json").absolutePath
+
+        // TODO: support debugging
+        project.launchFile.location.assertIsFile()
+        project.launchFile.content.configurations.empty
+
+        project.tasksFile.location.assertIsFile()
+        project.tasksFile.content.tasks.size() == 2
+        project.tasksFile.content.tasks[0].label == "Build sharedLibrary"
+        project.tasksFile.content.tasks[0].group.kind == "build"
+        project.tasksFile.content.tasks[0].group.isDefault == true
+
+        project.tasksFile.content.tasks[1].label == "Build staticLibrary"
+        project.tasksFile.content.tasks[1].group == "build"
     }
 
     VisualStudioCodeProjectFixture vscodeProject(TestFile projectDir = file(".vscode")) {

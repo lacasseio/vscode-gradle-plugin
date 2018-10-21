@@ -50,6 +50,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,6 +60,10 @@ public class GenerateCompileCommandsFileTask extends JsonGeneratorTask<CompileCo
     private final RegularFileProperty compileCommandsLocation = getProject().getObjects().fileProperty();
     private final RegularFileProperty compiler = getProject().getObjects().fileProperty();
     private final ListProperty<CompileCommandsConfiguration> compileCommands = getProject().getObjects().listProperty(CompileCommandsConfiguration.class);
+
+    public GenerateCompileCommandsFileTask() {
+        compileCommands.set(Collections.emptyList());
+    }
 
     @Override
     protected void configure(CompileCommandsFile object) {

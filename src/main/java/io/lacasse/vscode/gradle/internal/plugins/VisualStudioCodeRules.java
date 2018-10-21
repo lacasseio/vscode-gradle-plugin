@@ -14,9 +14,13 @@ import org.gradle.model.Each;
 import org.gradle.model.Model;
 import org.gradle.model.Mutate;
 import org.gradle.model.RuleSource;
+import org.gradle.nativeplatform.NativeBinarySpec;
 import org.gradle.nativeplatform.NativeExecutableBinarySpec;
 import org.gradle.nativeplatform.NativeExecutableSpec;
+import org.gradle.nativeplatform.SharedLibraryBinarySpec;
+import org.gradle.nativeplatform.StaticLibraryBinarySpec;
 import org.gradle.platform.base.ComponentSpecContainer;
+import org.gradle.platform.base.VariantComponentSpec;
 
 public class VisualStudioCodeRules extends RuleSource {
     @Model
@@ -33,11 +37,17 @@ public class VisualStudioCodeRules extends RuleSource {
     void populate(VisualStudioCodeExtension visualStudioCode, ComponentSpecContainer components, ServiceRegistry serviceRegistry) {
         ProviderFactory providerFactory = serviceRegistry.get(ProviderFactory.class);
 
-        components.withType(NativeExecutableSpec.class).forEach(component -> {
-            component.getBinaries().withType(NativeExecutableBinarySpec.class).forEach(binary -> {
+        components.withType(VariantComponentSpec.class).forEach(component -> {
+            component.getBinaries().withType(NativeBinarySpec.class).forEach(binary -> {
                 visualStudioCode.getProject().cppConfiguration(binary.getName(), (it) -> it.configureFromBinary(binary));
-                // TODO: Implementation knowledge on what is the development binary
-                visualStudioCode.getProject().buildTask("Build " + binary.getName(), providerFactory.provider(() -> binary.getTasks().getLink()), binary.getBuildType().getName().equals("debug"));
+                // TODO: default should consider buildable flag
+                if (binary instanceof SharedLibraryBinarySpec) {
+                    visualStudioCode.getProject().buildTask("Build " + binary.getName(), providerFactory.provider(() -> binary.getBuildTask()), binary.getBuildType().getName().equals("debug"));
+                } else if (binary instanceof StaticLibraryBinarySpec) {
+                    visualStudioCode.getProject().buildTask("Build " + binary.getName(), providerFactory.provider(() -> binary.getBuildTask()));
+                } else if (binary instanceof NativeExecutableBinarySpec) {
+                    visualStudioCode.getProject().buildTask("Build " + binary.getName(), providerFactory.provider(() -> binary.getBuildTask()), binary.getBuildType().getName().equals("debug"));
+                }
             });
         });
     }
