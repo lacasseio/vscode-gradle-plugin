@@ -210,6 +210,56 @@ class SingleCppApplicationProjectIntegrationTest extends Specification implement
         project.tasksFile.content.tasks[1].group == "build"
     }
 
+    @UsesSample("cpp-application-software-model")
+    def "can create vscode IDE files for C++ application from the software model with non-buildable build type"() {
+        buildFile << '''
+            model {
+                buildTypes {
+                    debug
+                    release
+                }
+                
+                binaries {
+                    all {
+                        def buildTypes = $.buildTypes
+                        if (buildType == buildTypes.debug) {
+                            buildable = false
+                        }
+                    }
+                }
+            }
+        '''
+
+        expect:
+        succeeds "vscode"
+
+        assertTasksExecuted(vscodeTasks())
+        assertTasksNotSkipped(vscodeTasks())
+
+        def project = vscodeProject()
+        project.cppPropertiesFile.location.assertIsFile()
+        project.cppPropertiesFile.content.configurations.size() == 2
+        project.cppPropertiesFile.content.configurations[0].name == "debugExecutable"
+        project.cppPropertiesFile.content.configurations[0].includePath.contains(rootProject.file("src/main/headers").absolutePath)
+        project.cppPropertiesFile.content.configurations[0].defines.empty
+        project.cppPropertiesFile.content.configurations[0].compileCommands == rootProject.file("build/cpp-support/debugExecutable/compile_commands.json").absolutePath
+
+        project.cppPropertiesFile.content.configurations[1].name == "releaseExecutable"
+        project.cppPropertiesFile.content.configurations[1].includePath.contains(rootProject.file("src/main/headers").absolutePath)
+        project.cppPropertiesFile.content.configurations[1].defines.empty
+        project.cppPropertiesFile.content.configurations[1].compileCommands == rootProject.file("build/cpp-support/releaseExecutable/compile_commands.json").absolutePath
+
+        // TODO: support debugging
+        project.launchFile.location.assertIsFile()
+        project.launchFile.content.configurations.empty
+
+        project.tasksFile.location.assertIsFile()
+        project.tasksFile.content.tasks.size() == 1
+        project.tasksFile.content.tasks[0].label == "Build releaseExecutable"
+        project.tasksFile.content.tasks[0].group.kind == "build"
+        project.tasksFile.content.tasks[0].group.isDefault == true
+    }
+
     // TODO: Add coverage for multiple platform (the one targetting the current host are eligible for being the default)
     // TODO: Add coverage for multiple flavor (may defer this one)
 
