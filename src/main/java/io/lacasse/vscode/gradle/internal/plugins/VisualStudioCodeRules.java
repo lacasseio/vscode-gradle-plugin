@@ -14,6 +14,7 @@ import org.gradle.model.Each;
 import org.gradle.model.Model;
 import org.gradle.model.Mutate;
 import org.gradle.model.RuleSource;
+import org.gradle.nativeplatform.BuildTypeContainer;
 import org.gradle.nativeplatform.NativeBinarySpec;
 import org.gradle.nativeplatform.NativeExecutableBinarySpec;
 import org.gradle.nativeplatform.NativeExecutableSpec;
@@ -34,7 +35,7 @@ public class VisualStudioCodeRules extends RuleSource {
     }
 
     @Mutate
-    void populate(VisualStudioCodeExtension visualStudioCode, ComponentSpecContainer components, ServiceRegistry serviceRegistry) {
+    void populate(VisualStudioCodeExtension visualStudioCode, ComponentSpecContainer components, ServiceRegistry serviceRegistry, BuildTypeContainer buildTypes) {
         ProviderFactory providerFactory = serviceRegistry.get(ProviderFactory.class);
 
         components.withType(VariantComponentSpec.class).forEach(component -> {
@@ -46,9 +47,20 @@ public class VisualStudioCodeRules extends RuleSource {
                 } else if (binary instanceof StaticLibraryBinarySpec) {
                     visualStudioCode.getProject().buildTask("Build " + binary.getName(), providerFactory.provider(() -> binary.getBuildTask()));
                 } else if (binary instanceof NativeExecutableBinarySpec) {
-                    visualStudioCode.getProject().buildTask("Build " + binary.getName(), providerFactory.provider(() -> binary.getBuildTask()), binary.getBuildType().getName().equals("debug"));
+                    visualStudioCode.getProject().buildTask("Build " + binary.getName(), providerFactory.provider(() -> binary.getBuildTask()), isDefault(binary, buildTypes));
                 }
             });
         });
+    }
+
+    private static boolean isDefault(NativeBinarySpec binary, BuildTypeContainer buildTypes) {
+        if (binary.getBuildType().getName().equals("debug")) {
+            return true;
+        } else if (buildTypes.size() == 1) {
+            return true;
+        } else if (buildTypes.iterator().next().getName().equals(binary.getBuildType().getName())) {
+            return true;
+        }
+        return false;
     }
 }

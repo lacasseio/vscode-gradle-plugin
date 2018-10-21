@@ -78,7 +78,138 @@ class SingleCppApplicationProjectIntegrationTest extends Specification implement
         project.tasksFile.content.tasks[0].group.isDefault == true
     }
 
-    // TODO: Add coverage for multiple build type (with and without `debug`)
+    @UsesSample("cpp-application-software-model")
+    def "can create vscode IDE files for C++ application from the software model with well known build type"() {
+        buildFile << """
+            model {
+                buildTypes {
+                    debug
+                    debugOptimized
+                    release
+                }
+            }
+        """
+
+        expect:
+        succeeds "vscode"
+
+        assertTasksExecuted(vscodeTasks())
+        assertTasksNotSkipped(vscodeTasks())
+
+        def project = vscodeProject()
+        project.cppPropertiesFile.location.assertIsFile()
+        project.cppPropertiesFile.content.configurations.size() == 3
+        project.cppPropertiesFile.content.configurations[0].name == "debugExecutable"
+        project.cppPropertiesFile.content.configurations[0].includePath.contains(rootProject.file("src/main/headers").absolutePath)
+        project.cppPropertiesFile.content.configurations[0].defines.empty
+        project.cppPropertiesFile.content.configurations[0].compileCommands == rootProject.file("build/cpp-support/debugExecutable/compile_commands.json").absolutePath
+
+        project.cppPropertiesFile.content.configurations[1].name == "debugOptimizedExecutable"
+        project.cppPropertiesFile.content.configurations[1].includePath.contains(rootProject.file("src/main/headers").absolutePath)
+        project.cppPropertiesFile.content.configurations[1].defines.empty
+        project.cppPropertiesFile.content.configurations[1].compileCommands == rootProject.file("build/cpp-support/debugOptimizedExecutable/compile_commands.json").absolutePath
+
+        project.cppPropertiesFile.content.configurations[2].name == "releaseExecutable"
+        project.cppPropertiesFile.content.configurations[2].includePath.contains(rootProject.file("src/main/headers").absolutePath)
+        project.cppPropertiesFile.content.configurations[2].defines.empty
+        project.cppPropertiesFile.content.configurations[2].compileCommands == rootProject.file("build/cpp-support/releaseExecutable/compile_commands.json").absolutePath
+
+        // TODO: support debugging
+        project.launchFile.location.assertIsFile()
+        project.launchFile.content.configurations.empty
+
+        project.tasksFile.location.assertIsFile()
+        project.tasksFile.content.tasks.size() == 3
+        project.tasksFile.content.tasks[0].label == "Build debugExecutable"
+        project.tasksFile.content.tasks[0].group.kind == "build"
+        project.tasksFile.content.tasks[0].group.isDefault == true
+
+        project.tasksFile.content.tasks[1].label == "Build debugOptimizedExecutable"
+        project.tasksFile.content.tasks[1].group == "build"
+
+        project.tasksFile.content.tasks[2].label == "Build releaseExecutable"
+        project.tasksFile.content.tasks[2].group == "build"
+    }
+
+    @UsesSample("cpp-application-software-model")
+    def "can create vscode IDE files for C++ application from the software model with non-debug build type"() {
+        buildFile << """
+            model {
+                buildTypes {
+                    release
+                }
+            }
+        """
+
+        expect:
+        succeeds "vscode"
+
+        assertTasksExecuted(vscodeTasks())
+        assertTasksNotSkipped(vscodeTasks())
+
+        def project = vscodeProject()
+        project.cppPropertiesFile.location.assertIsFile()
+        project.cppPropertiesFile.content.configurations.size() == 1
+        project.cppPropertiesFile.content.configurations[0].name == "executable"
+        project.cppPropertiesFile.content.configurations[0].includePath.contains(rootProject.file("src/main/headers").absolutePath)
+        project.cppPropertiesFile.content.configurations[0].defines.empty
+        project.cppPropertiesFile.content.configurations[0].compileCommands == rootProject.file("build/cpp-support/executable/compile_commands.json").absolutePath
+
+        // TODO: support debugging
+        project.launchFile.location.assertIsFile()
+        project.launchFile.content.configurations.empty
+
+        project.tasksFile.location.assertIsFile()
+        project.tasksFile.content.tasks.size() == 1
+        project.tasksFile.content.tasks[0].label == "Build executable"
+        project.tasksFile.content.tasks[0].group.kind == "build"
+        project.tasksFile.content.tasks[0].group.isDefault == true
+    }
+
+    @UsesSample("cpp-application-software-model")
+    def "can create vscode IDE files for C++ application from the software model with non-standard build type"() {
+        buildFile << """
+            model {
+                buildTypes {
+                    foo
+                    bar
+                }
+            }
+        """
+
+        expect:
+        succeeds "vscode"
+
+        assertTasksExecuted(vscodeTasks())
+        assertTasksNotSkipped(vscodeTasks())
+
+        def project = vscodeProject()
+        project.cppPropertiesFile.location.assertIsFile()
+        project.cppPropertiesFile.content.configurations.size() == 2
+        project.cppPropertiesFile.content.configurations[0].name == "barExecutable"
+        project.cppPropertiesFile.content.configurations[0].includePath.contains(rootProject.file("src/main/headers").absolutePath)
+        project.cppPropertiesFile.content.configurations[0].defines.empty
+        project.cppPropertiesFile.content.configurations[0].compileCommands == rootProject.file("build/cpp-support/barExecutable/compile_commands.json").absolutePath
+
+        project.cppPropertiesFile.content.configurations[1].name == "fooExecutable"
+        project.cppPropertiesFile.content.configurations[1].includePath.contains(rootProject.file("src/main/headers").absolutePath)
+        project.cppPropertiesFile.content.configurations[1].defines.empty
+        project.cppPropertiesFile.content.configurations[1].compileCommands == rootProject.file("build/cpp-support/fooExecutable/compile_commands.json").absolutePath
+
+        // TODO: support debugging
+        project.launchFile.location.assertIsFile()
+        project.launchFile.content.configurations.empty
+
+        project.tasksFile.location.assertIsFile()
+        project.tasksFile.content.tasks.size() == 2
+        project.tasksFile.content.tasks[0].label == "Build barExecutable"
+        project.tasksFile.content.tasks[0].group.kind == "build"
+        project.tasksFile.content.tasks[0].group.isDefault == true
+
+        project.tasksFile.content.tasks[1].label == "Build fooExecutable"
+        project.tasksFile.content.tasks[1].group == "build"
+    }
+
     // TODO: Add coverage for multiple platform (the one targetting the current host are eligible for being the default)
     // TODO: Add coverage for multiple flavor (may defer this one)
 
