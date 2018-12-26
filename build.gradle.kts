@@ -17,11 +17,7 @@ dependencies {
     testImplementation("org.spockframework:spock-core:1.2-groovy-2.5") {
         exclude("groovy-all")
     }
-    testImplementation("org.gradle:sample-check:latest.integration") {
-        version {
-            branch = "lacasseio/support-kotlin-1.3-rc"
-        }
-    }
+    testImplementation("org.gradle:sample-check:latest.integration")
 }
 
 repositories {
